@@ -116,7 +116,6 @@ getWar(){
         echo "Downloading: ${URL}"
         curl -s -o /vagrant/${URL##*/} ${URL} \
         && cp /vagrant/${URL##*/} /var/lib/tomcat7/webapps/ROOT.war \
-#        && cp ${DATA_ROOT}/src/${URL##*/} /var/lib/tomcat7/webapps/ROOT.war \
         || echo "Error downloading '${URL}'"
     fi
 }
