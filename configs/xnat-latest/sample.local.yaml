@@ -1,0 +1,32 @@
+# xnat17fresh/local.yaml
+
+# unique name for the VM
+name: xnat-fresh
+
+# email address for server admin
+admin: admin@yourorg.org
+
+# FQDN or IP address of mail server that will handle outgoing messages
+smtp:  mail.server
+
+# unique IP address for the VM
+vm_ip: 10.1.101.170
+
+# specify a custom username and home directory
+vm_user: bob
+home:    /home/bob # VM user's home
+# xnat_url:     https://bitbucket.org/xnatdev/xnat-web.git
+# pipeline_url: https://bitbucket.org/nrg/xnat-pipeline.git
+
+# the setup script will determine how to fetch the code
+# - *.git will clone via Git
+# - http[s]* will clone with Mercurial
+# - ftp* will download via FTP
+# - otherwise a local copy will be attempted
+
+# specify additional shares in a 'shares' property
+
+# shares:
+#   './shared':                      # path to local folder on host
+#     - '/shared'                    # path to folder in VM
+#     - ['fmode=777','dmode=777']    # (optional) 'mount_options' array

@@ -1,0 +1,23 @@
+# xnat-dev/local.yaml
+
+# unique name for the VM
+name: xnat-fresh
+
+# email address for server admin
+admin: admin@yourorg.org
+
+# FQDN or IP address of mail server that will handle outgoing messages
+smtp:  mail.server
+
+# unique IP address for the VM
+vm_ip: 10.1.101.170
+
+xnat_src:     ../path/to/xnat/source/on/host
+pipeline_src: ../path/to/pipeline/source/on/host
+
+# specify additional shares in a 'shares' property
+
+# shares:
+#   './shared':                      # path to local folder on host
+#     - '/shared'                    # path to folder in VM
+#     - ['fmode=777','dmode=777']    # (optional) 'mount_options' array

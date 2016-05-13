@@ -1,0 +1,23 @@
+# xnat/local.yaml
+
+# unique name for the VM
+name: xnat-war
+
+# email address for server admin
+admin: admin@yourorg.org
+
+# FQDN or IP address of mail server that will handle outgoing messages
+smtp:  mail.server
+
+# unique IP address for the VM
+vm_ip: 10.1.101.170
+
+xnat_url:     ftp://ftp.nrg.wustl.edu/pub/xnat/xnat-web-1.7.0-SNAPSHOT.war
+pipeline_url: ftp://ftp.nrg.wustl.edu/pub/xnat/xnat-pipeline-1.7.0-SNAPSHOT.zip
+
+# specify additional shares in a 'shares' property
+
+# shares:
+#   './shared':                      # path to local folder on host
+#     - '/shared'                    # path to folder in VM
+#     - ['fmode=777','dmode=777']    # (optional) 'mount_options' array
