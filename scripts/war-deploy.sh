@@ -110,12 +110,13 @@ getWar(){
 
     # if the file has already been downloaded to the host, use that
     if [[ -f /vagrant/${URL##*/} ]]; then
-        cp /vagrant/${URL##*/} /var/lib/tomcat7/webapps/ROOT.war \
+        cp /vagrant/${URL##*/} /var/lib/tomcat7/webapps/ROOT.war
     else
         echo
         echo "Downloading: ${URL}"
-        curl -O ${URL} \
-        && cp ${DATA_ROOT}/src/xnat.war /var/lib/tomcat7/webapps/ROOT.war \
+        curl -s -o /vagrant/${URL##*/} ${URL} \
+        && cp /vagrant/${URL##*/} /var/lib/tomcat7/webapps/ROOT.war \
+#        && cp ${DATA_ROOT}/src/${URL##*/} /var/lib/tomcat7/webapps/ROOT.war \
         || echo "Error downloading '${URL}'"
     fi
 }
