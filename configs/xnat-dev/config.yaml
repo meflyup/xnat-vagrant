@@ -5,7 +5,7 @@
 # IT TO 'local.yaml' TO CUSTOMIZE
 # YOUR SETTINGS.
 
-name:           xnat # name of VirtualBox VM
+name:           xnat-dev # name of VirtualBox VM
 host:           '' # uses [name] if not defined or empty string
 server:         '' # uses IP address from [vm_ip] if not defined or empty string
 project:        xnat
@@ -13,7 +13,7 @@ site:           XNAT
 admin:          admin@yourorg.org
 smtp:           mail.server
 vm_user:        xnat # this is the user that will run Tomcat and own files/folders under /data
-vm_ip:          10.1.1.170
+vm_ip:          10.1.10.170
 
 provision:      ../../scripts/provision.sh
 build:          ../../scripts/gradle-build.sh

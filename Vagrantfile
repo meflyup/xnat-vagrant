@@ -169,10 +169,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
             end
 
             # Additional provisioners, called explicitly by "--provision-with foo"
-            config.vm.provision 'build', type: :shell, path: build_script, privileged: false
-            # config.vm.provision 'quick-deploy', type: :shell, path: '/vagrant-multi/scripts/quick-deploy.sh', privileged: false
-            # config.vm.provision 'quick-deploy-templates', type: :shell, path: '/vagrant-multi/scripts/quick-deploy-templates.sh', privileged: false
-            # config.vm.provision 'gradle-build', type: :shell, path: '/vagrant-multi/scripts/gradle-build.sh', privileged: false
+            config.vm.provision 'build', type: :shell, binary: false, path: build_script, privileged: false
 
         end
 

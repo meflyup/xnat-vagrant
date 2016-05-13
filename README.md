@@ -1,7 +1,10 @@
 XNAT Vagrant
 ==============================
 
-------------------------------
+## Note
+
+On Windows, due to the way Git handles line endings (by default) when cloning, you will need to make
+sure to preserve line endings when cloning this repo, otherwise provisioning the VM will fail.
 
 ## Quick-Start
 

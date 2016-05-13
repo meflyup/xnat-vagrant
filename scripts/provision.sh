@@ -33,6 +33,9 @@ if [ -v INSTALL ]; then
     sudo apt-get -y install ${INSTALL}
 fi
 
+# Update security stuff
+sudo update-ca-certificates -f
+
 # Create XNAT user
 #  1. Create user group
 #  2. Create user. Flags:
