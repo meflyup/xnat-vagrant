@@ -169,7 +169,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
             end
 
             # Additional provisioners, called explicitly by "--provision-with foo"
-            config.vm.provision 'build', type: :shell, binary: false, path: build_script, privileged: false
+            config.vm.provision 'build', type: :shell, binary: true, path: build_script, privileged: false
 
         end
 

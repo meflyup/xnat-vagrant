@@ -10,6 +10,31 @@ replaceTokens() {
     cat /vagrant-multi/templates/$1.tmpl | sed -f /vagrant/.work/vars.sed
 }
 
+# create default XNAT data folders
+setupFolders() {
+
+    DATA_ROOT=$1
+
+    mkdir -p \
+        /data \
+        ${DATA_ROOT}/src \
+        ${DATA_ROOT}/modules/pipeline \
+        ${DATA_ROOT}/modules/webapp \
+        ${DATA_ROOT}/archive \
+        ${DATA_ROOT}/build \
+        ${DATA_ROOT}/cache \
+        ${DATA_ROOT}/ftp \
+        ${DATA_ROOT}/pipeline \
+        ${DATA_ROOT}/prearchive \
+        ${DATA_ROOT}/scripts
+
+
+    # Copy some scripts to the scripts folder
+    cp /vagrant/.work/vars.sh /data/scripts
+    cp /vagrant-multi/scripts/rebuild.sh /data/scripts
+
+}
+
 copyLocalFolder() {
     SRC=$1
     DEST=$2

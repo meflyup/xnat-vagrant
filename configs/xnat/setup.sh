@@ -37,14 +37,17 @@ echo Starting XNAT build...
 
 echo
 echo Provisioning VM with specified user...
+echo
 vagrant up
 
 echo
 echo Reloading VM configuration to configure folder sharing...
+echo
 vagrant reload
 
 echo
 echo Running build provision to build and deploy XNAT on the VM...
+echo
 vagrant provision --provision-with build
 
 #rm -f .work/config

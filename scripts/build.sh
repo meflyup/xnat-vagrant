@@ -45,16 +45,8 @@ else
     sudo chown -R ${VM_USER}.${VM_USER} /data
 fi
 
-mkdir -p \
-    ${DATA_ROOT}/src \
-    ${DATA_ROOT}/modules/pipeline \
-    ${DATA_ROOT}/modules/webapp \
-    ${DATA_ROOT}/archive \
-    ${DATA_ROOT}/build \
-    ${DATA_ROOT}/cache \
-    ${DATA_ROOT}/ftp \
-    ${DATA_ROOT}/pipeline \
-    ${DATA_ROOT}/prearchive
+# setup XNAT data folders
+setupFolders ${DATA_ROOT}
 
 # Copies or downloads specified release archive or folder
 getRelease() {

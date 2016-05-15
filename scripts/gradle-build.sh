@@ -24,7 +24,7 @@ sudo service tomcat7 stop
 sudo service nginx stop
 
 # Configure the host settings.
-echo -e "${VM_IP}\t${HOST} ${SERVER}" | sudo tee --append /etc/hosts
+echo -e "${VM_IP} ${HOST} ${SERVER}" | sudo tee --append /etc/hosts
 
 # Configure nginx to proxy Tomcat.
 replaceTokens xnatdev | sudo tee /etc/nginx/sites-available/${HOST}
@@ -50,6 +50,11 @@ replaceTokens tomcat7 | sudo tee /etc/default/tomcat7
 tac /var/lib/tomcat7/conf/context.xml | sed '/Manager pathname/{N;s/\n.*//;}' | tac | sed '/Manager pathname/{N;s/\n.*//;}' > /var/lib/tomcat7/conf/context.mod
 mv /var/lib/tomcat7/conf/context.mod /var/lib/tomcat7/conf/context.xml
 replaceTokens tomcat-users.xml | tee /var/lib/tomcat7/conf/tomcat-users.xml
+
+# Move the default ROOT folder out of the way
+if [ -d /var/lib/tomcat7/webapps/ROOT ]; then
+    mv /var/lib/tomcat7/webapps/ROOT /var/lib/tomcat7/webapps/default
+fi
 
 
 # POSTGRES STUFF
@@ -82,16 +87,8 @@ else
     sudo chown -R ${VM_USER}.${VM_USER} /data
 fi
 
-mkdir -p \
-    ${DATA_ROOT}/src \
-    ${DATA_ROOT}/modules/pipeline \
-    ${DATA_ROOT}/modules/webapp \
-    ${DATA_ROOT}/archive \
-    ${DATA_ROOT}/build \
-    ${DATA_ROOT}/cache \
-    ${DATA_ROOT}/ftp \
-    ${DATA_ROOT}/pipeline \
-    ${DATA_ROOT}/prearchive
+# setup XNAT data folders
+setupFolders ${DATA_ROOT}
 
 # Copies or downloads specified release archive or folder
 getRelease() {
