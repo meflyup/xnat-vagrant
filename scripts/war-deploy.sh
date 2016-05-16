@@ -74,21 +74,22 @@ sudo service postgresql restart
 # XNAT STUFF
 
 # Create project subfolders
-if [ -d ${DATA_ROOT} ]; then
-    echo Using existing folder ${DATA_ROOT}, setting ownership to ${VM_USER}
-    sudo chown ${VM_USER}.${VM_USER} /data
-    sudo chown ${VM_USER}.${VM_USER} ${DATA_ROOT}
-    if [ -d ${DATA_ROOT}/src ]; then
-        sudo chown ${VM_USER}.${VM_USER} ${DATA_ROOT}/src
-    fi
-else
-    echo Creating folder ${DATA_ROOT}
-    sudo mkdir -p ${DATA_ROOT};
-    sudo chown -R ${VM_USER}.${VM_USER} /data
-fi
 
 # setup XNAT data folders
-setupFolders ${DATA_ROOT}
+setupFolders ${DATA_ROOT} ${VM_USER}
+
+#if [ -d ${DATA_ROOT} ]; then
+#    echo Using existing folder ${DATA_ROOT}, setting ownership to ${VM_USER}
+#    sudo chown ${VM_USER}.${VM_USER} /data
+#    sudo chown ${VM_USER}.${VM_USER} ${DATA_ROOT}
+#    if [ -d ${DATA_ROOT}/src ]; then
+#        sudo chown ${VM_USER}.${VM_USER} ${DATA_ROOT}/src
+#    fi
+#else
+#    echo Creating folder ${DATA_ROOT}
+#    sudo mkdir -p ${DATA_ROOT};
+#    sudo chown -R ${VM_USER}.${VM_USER} /data
+#fi
 
 # Download pre-built .war file and copy to tomcat webapps folder
 getWar(){
@@ -98,7 +99,7 @@ getWar(){
     cd ${DATA_ROOT}/src
 
     # if the file has already been downloaded to the host, use that
-    if [[ -f /vagrant/${URL##*/} ]]; then
+    if [[ -f /vagrant/${URL##*/} && ${URL##*/} == *.war ]]; then
         cp /vagrant/${URL##*/} /var/lib/tomcat7/webapps/ROOT.war
     else
         echo

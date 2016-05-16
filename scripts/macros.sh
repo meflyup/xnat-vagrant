@@ -16,9 +16,11 @@ replaceTokens() {
 setupFolders() {
 
     DATA_ROOT=$1
+    VM_USER=$2
 
-    mkdir -p \
+    sudo mkdir -p \
         /data \
+        /data/scripts \
         ${DATA_ROOT}/src \
         ${DATA_ROOT}/modules/pipeline \
         ${DATA_ROOT}/modules/webapp \
@@ -27,12 +29,14 @@ setupFolders() {
         ${DATA_ROOT}/cache \
         ${DATA_ROOT}/ftp \
         ${DATA_ROOT}/pipeline \
-        ${DATA_ROOT}/prearchive \
-        ${DATA_ROOT}/scripts
+        ${DATA_ROOT}/prearchive
 
 
     # Copy some scripts to the scripts folder
-    cp -fvt /data/scripts /vagrant/.work/vars.sh /vagrant-multi/scripts/rebuild.sh && chmod +x /data/scripts/*.sh
+    sudo cp -fvt /data/scripts /vagrant/.work/vars.sh /vagrant-multi/scripts/rebuild.sh \
+    && sudo chmod +x /data/scripts/*.sh
+
+    [[ ! -z ${VM_USER} ]] && { sudo chown -R ${VM_USER}:${VM_USER} /data ${DATA_ROOT}; }
 
 }
 

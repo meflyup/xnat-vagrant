@@ -3,6 +3,7 @@
 # This script is to be executed from inside the VM to rebuild XNAT.
 # Gradle will be executed and dependencies downloaded in the VM.
 
+echo
 echo Now running the "rebuild.sh" provisioning script.
 
 source vars.sh
@@ -25,13 +26,13 @@ echo Rebuilding XNAT...
 echo
 echo Deleting web app and redeploying XNAT...
 
-rm -Rf /var/lib/tomcat7/ROOT*
+sudo rm -Rf /var/lib/tomcat7/webapps/ROOT*
 
 echo
 
 if [[ -e /vagrant/${XNAT_SRC##*/} && ${XNAT_SRC##*/} == *.war  ]]; then
     echo Copying war file...
-    cp /vagrant/${XNAT_SRC##*/} /var/lib/tomcat7/ROOT.war
+    cp -fv /vagrant/${XNAT_SRC##*/} /var/lib/tomcat7/webapps/ROOT.war
 else
     echo Executing Gradle build
     cd ${DATA_ROOT}/src/${XNAT_DIR}
@@ -42,7 +43,7 @@ fi
 # Reset database?
 DESTROY=N
 echo
-read -p "Would you like to empty the database? All XNAT data will be destroyed. [y/N] " DESTROY
+read -p "Would you like to empty the database? ALL XNAT DATA IN THIS VM WILL BE DESTROYED. [y/N] " DESTROY
 
 if [[ $DESTROY =~ [Yy] ]]; then
 

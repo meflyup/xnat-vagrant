@@ -73,21 +73,21 @@ sudo service postgresql restart
 # XNAT STUFF
 
 # Create project subfolders
-if [ -d ${DATA_ROOT} ]; then
-    echo Using existing folder ${DATA_ROOT}, setting ownership to ${VM_USER}
-    sudo chown ${VM_USER}.${VM_USER} /data
-    sudo chown ${VM_USER}.${VM_USER} ${DATA_ROOT}
-    if [ -d ${DATA_ROOT}/src ]; then
-        sudo chown ${VM_USER}.${VM_USER} ${DATA_ROOT}/src
-    fi
-else
-    echo Creating folder ${DATA_ROOT}
-    sudo mkdir -p ${DATA_ROOT};
-    sudo chown -R ${VM_USER}.${VM_USER} /data
-fi
+#if [ -d ${DATA_ROOT} ]; then
+#    echo Using existing folder ${DATA_ROOT}, setting ownership to ${VM_USER}
+#    sudo chown ${VM_USER}.${VM_USER} /data
+#    sudo chown ${VM_USER}.${VM_USER} ${DATA_ROOT}
+#    if [ -d ${DATA_ROOT}/src ]; then
+#        sudo chown ${VM_USER}.${VM_USER} ${DATA_ROOT}/src
+#    fi
+#else
+#    echo Creating folder ${DATA_ROOT}
+#    sudo mkdir -p ${DATA_ROOT};
+#    sudo chown -R ${VM_USER}.${VM_USER} /data
+#fi
 
 # setup XNAT data folders
-setupFolders ${DATA_ROOT}
+setupFolders ${DATA_ROOT} ${VM_USER}
 
 # Copies or downloads specified release archive or folder
 downloadSrc() {
