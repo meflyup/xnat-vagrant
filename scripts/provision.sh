@@ -6,8 +6,7 @@
 # Released under the Simplified BSD license.
 #
 
-SOURCE=$(basename -- ${BASH_SOURCE[0]})
-echo Now running the "${SOURCE}" provisioning script.
+echo Now running the "provision.sh" provisioning script.
 
 # Check if there's a vars.sh specified. If not, then copy the default template in.
 [[ ! -d /vagrant/.work ]] && { mkdir /vagrant/.work; }

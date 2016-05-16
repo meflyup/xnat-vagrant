@@ -3,8 +3,7 @@
 # XNAT download and installation
 #
 
-SOURCE=$(basename -- ${BASH_SOURCE[0]})
-echo Now running the "${SOURCE}" provisioning script.
+echo Now running the "gradle-build.sh" provisioning script.
 
 sourceScript() {
     test -f /vagrant/scripts/$1 && source /vagrant/scripts/$1 || source /vagrant-multi/scripts/$1

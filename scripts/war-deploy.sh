@@ -4,8 +4,7 @@
 # Download and deploy XNAT war
 #
 
-SOURCE=$(basename -- ${BASH_SOURCE[0]})
-echo Now running the "${SOURCE}" provisioning script.
+echo Now running the "war-deploy.sh" provisioning script.
 
 sourceScript() {
     test -f /vagrant/scripts/$1 && source /vagrant/scripts/$1 || source /vagrant-multi/scripts/$1
@@ -117,7 +116,32 @@ getWar ${XNAT_URL}
 
 
 # TODO: pipeline download and processing
+getPipeline() {
 
+    URL=$1
+
+    cd ${DATA_ROOT}/src
+
+    [[ ! -d pipeline ]] && { mkdir pipeline; }
+    cd pipeline
+
+    # if the file has already been downloaded to the host, use that
+    if [[ ! -f /vagrant/${URL##*/} ]]; then
+        echo
+        echo "Downloading: ${URL}"
+        curl -s -o /vagrant/${URL##*/} ${URL} \
+        || echo "Error downloading '${URL}'"
+    fi
+
+    if [[ -f /vagrant/${URL##*/} ]]; then
+        unzip /vagrant/${URL##*/}
+        replaceTokens pipeline.gradle.properties | tee gradle.properties
+        ./gradlew
+    fi
+}
+
+# Get the pipeline zip file, extract it, and run the installer.
+getPipeline ${PIPELINE_URL}
 
 # Is the variable MODULES defined?
 [[ -v MODULES ]] \

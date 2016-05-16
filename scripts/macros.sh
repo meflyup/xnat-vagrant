@@ -1,5 +1,7 @@
 #!/bin/bash
 
+echo Now running the "macros.sh" provisioning script.
+
 # cache the *original working directory if not already defined
 [[ -z $_OWD ]] && { _OWD=${PWD}; }
 

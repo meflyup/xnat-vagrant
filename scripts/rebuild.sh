@@ -3,6 +3,8 @@
 # This script is to be executed from inside the VM to rebuild XNAT.
 # Gradle will be executed and dependencies downloaded in the VM.
 
+echo Now running the "rebuild.sh" provisioning script.
+
 source vars.sh
 
 # Exit with error status

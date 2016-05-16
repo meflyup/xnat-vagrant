@@ -1,5 +1,7 @@
 #!/bin/bash
 
+echo Now running the "get-configs.sh" provisioning script.
+
 cd ../configs
 
 # get list of FOLDER names of configs

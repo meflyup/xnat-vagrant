@@ -1,7 +1,6 @@
 #!/bin/bash
 
-SOURCE=$(basename -- ${BASH_SOURCE[0]})
-echo Now running the "${SOURCE}" provisioning script.
+echo Now running the "defaults.sh" provisioning script.
 
 # Set default values for these vars if they're not already set.
 [[ -z $DEPLOY ]] && { DEPLOY=release; echo s/@DEPLOY@/release/g >> /vagrant/.work/vars.sed; }

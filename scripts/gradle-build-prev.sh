@@ -3,6 +3,8 @@
 # XNAT download and installation
 #
 
+echo Now running the "gradle-build=prev.sh" provisioning script.
+
 source /vagrant/.work/vars.sh
 source /vagrant/scripts/macros.sh
 source /vagrant/scripts/defaults.sh
