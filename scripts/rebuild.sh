@@ -7,6 +7,8 @@ echo Now running the "rebuild.sh" provisioning script.
 
 source vars.sh
 
+OWD=${PWD}
+
 # Exit with error status
 die() {
     echo >&2 "$@"
@@ -26,12 +28,15 @@ echo Deleting web app and redeploying XNAT...
 rm -Rf /var/lib/tomcat7/ROOT*
 
 echo
-echo Executing Gradle build
 
-if [[ -e /vagrant/${XNAT_SRC##*/} ]]; then
+if [[ -e /vagrant/${XNAT_SRC##*/} && ${XNAT_SRC##*/} == *.war  ]]; then
+    echo Copying war file...
     cp /vagrant/${XNAT_SRC##*/} /var/lib/tomcat7/ROOT.war
 else
-    bash -c "${DATA_ROOT}/src/${XNAT_DIR}/gradlew clean war --refresh-dependencies deployToTomcat"
+    echo Executing Gradle build
+    cd ${DATA_ROOT}/src/${XNAT_DIR}
+    ./gradlew clean war --refresh-dependencies deployToTomcat
+    cd $OWD
 fi
 
 # Reset database?

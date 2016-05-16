@@ -32,8 +32,7 @@ setupFolders() {
 
 
     # Copy some scripts to the scripts folder
-    cp /vagrant/.work/vars.sh /data/scripts
-    cp /vagrant-multi/scripts/rebuild.sh /data/scripts
+    cp -fvt /data/scripts /vagrant/.work/vars.sh /vagrant-multi/scripts/rebuild.sh && chmod +x /data/scripts/*.sh
 
 }
 

@@ -69,12 +69,12 @@ if profile['server'] == ''
     profile['server'] = profile['vm_ip']
 end
 
-if profile['xnat_url']
-    profile['xnat_src'] = profile['xnat_url']
+if profile['xnat_url'] || profile['xnat_repo']
+    profile['xnat_src'] = profile['xnat_url'] ||= profile['xnat_repo']
 end
 
-if profile['pipeline_url']
-    profile['pipeline_src'] = profile['pipeline_url']
+if profile['pipeline_url'] || profile['pipeline_repo']
+    profile['pipeline_src'] = profile['pipeline_url'] ||= profile['pipeline_repo']
 end
 
 File.open("#{cwd}/.work/vars.sh", 'wb') { |vars|

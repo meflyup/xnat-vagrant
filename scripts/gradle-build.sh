@@ -90,13 +90,11 @@ fi
 setupFolders ${DATA_ROOT}
 
 # Copies or downloads specified release archive or folder
-getRelease() {
+downloadSrc() {
 
     SRC=$1
 
     cd ${DATA_ROOT}/src
-    # tolerate complete URLs for [xnat_src] and [pipeline_src]
-    [[ ${SRC} != ftp://* ]] && { SRC=ftp://ftp.nrg.wustl.edu/pub/xnat/${SRC}; }
     echo "Downloading: ${SRC}"
     wget -N -nv ${SRC} || echo "Error downloading '${SRC}'"
 
@@ -118,14 +116,8 @@ getDev() {
         echo "Cloning source repository: ${SRC}"
         git clone ${SRC} ${DATA_ROOT}/src/${DIR}
         copied=$?
-    elif [[ ${SRC} == ftp* ]]; then
-        # use getRelease for ftp
-        getRelease ${SRC}
-        copied=$?
-    elif [[ ${SRC} == http* || ${SRC} == ssh* || ${SRC} == file:* ]]; then
-        # clone with Mercurial for http, ssh, and file protocols
-        echo "Cloning source repository: ${SRC}"
-        hg -v clone ${SRC} -r ${REV} ${DATA_ROOT}/src/${DIR} || hg -v clone ${SRC} ${DATA_ROOT}/src/${DIR}
+    else
+        downloadSrc ${SRC}
         copied=$?
     fi
 
@@ -157,6 +149,7 @@ PIPE_DIR=${PIPELINE_SRC##*/}; PIPE_DIR=${PIPE_DIR%.tar.gz}; PIPE_DIR=${PIPE_DIR%
 if [[ -d ${DATA_ROOT}/src/${XNAT_DIR} && ! -d ${DATA_ROOT}/src/${XNAT} ]]; then
     mv -v ${DATA_ROOT}/src/${XNAT_DIR} ${DATA_ROOT}/src/${XNAT}
 fi
+
 # move pipeline source to properly named folder
 [[ -d ${DATA_ROOT}/src/pipeline-installer ]] && { PIPE_DIR="pipeline-installer"; }
 if [[ -d ${DATA_ROOT}/src/${PIPE_DIR} && ! -d ${DATA_ROOT}/src/${PIPELINE_INST} ]]; then
