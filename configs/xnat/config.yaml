@@ -22,8 +22,8 @@ deploy:         war
 revision:       1.7.0-SNAPSHOT
 db_version:     9.5
 
-xnat_url:       ftp://ftp.nrg.wustl.edu/pub/xnat/xnat-web-1.7.0-SNAPSHOT.war
-pipeline_url:   ftp://ftp.nrg.wustl.edu/pub/xnat/xnat-pipeline-1.7.0-SNAPSHOT.zip
+xnat_url:       https://bitbucket.org/xnatdev/xnat-web/downloads/xnat-web-1.7.0-SNAPSHOT.war
+pipeline_url:   https://bitbucket.org/xnatdev/xnat-pipeline/downloads/xnat-pipeline-1.7.0-SNAPSHOT.zip
 
 # VM config settings
 box:            xnatstack-ubuntu1404-docker-java8

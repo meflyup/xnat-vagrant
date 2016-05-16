@@ -135,9 +135,10 @@ getPipeline() {
     fi
 
     if [[ -f /vagrant/${URL##*/} ]]; then
-        unzip /vagrant/${URL##*/}
+        echo Extracting ${URL##*/}...
+        unzip -qo /vagrant/${URL##*/}
         replaceTokens pipeline.gradle.properties | tee gradle.properties
-        ./gradlew
+        ./gradlew -q
     fi
 }
 
