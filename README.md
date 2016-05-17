@@ -1,6 +1,8 @@
 XNAT Vagrant
 ==============================
 
+This is the primary release repository for the [XNAT](http://www.xnat.org) Vagrant project. You may find a more up-to-date version of this project on the corresponding [xnat-vagrant Bitbucket repository](https://bitbucket.org/xnatdev/xnat-vagrant), but you may also find a more __unstable__ version there as well. Updates will be pushed to this repository as they are tested and verified by the XNAT development team.
+
 ## Note
 
 On Windows, due to the way Git handles line endings (by default) when cloning, you will need to make
