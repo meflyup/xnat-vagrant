@@ -43,8 +43,8 @@ if [[ ! ${GET_FRESH_XNAT_WAR} =~ [Nn] ]]; then
     doDownload ${XNAT_URL}
 fi
 
-if [[ ! ${GET_FRESH_PIPELINE_WAR} =~ [Nn] ]]; then
-    [[ -e ${PIPELINE_WAR} ]] && { rm ${PIPELINE_WAR}; }
+if [[ ! ${GET_FRESH_PIPELINE_ZIP} =~ [Nn] ]]; then
+    [[ -e ${PIPELINE_ZIP} ]] && { rm ${PIPELINE_ZIP}; }
     echo
     echo Downloading from configured URL: ${PIPELINE_URL}
     doDownload ${PIPELINE_URL}
