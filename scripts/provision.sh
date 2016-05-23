@@ -69,8 +69,15 @@ echo ""
 echo "Adding XNAT user to list of NOPASSWD sudoers"
 replaceTokens sudoers.d | sudo tee /etc/sudoers.d/${VM_USER}
 
-# Set up Docker to listen for external connections
+## Set up Docker to listen for external connections
+#echo ""
+#echo "Creating Docker service configuration file"
+#sudo mkdir /etc/systemd/system/docker.service.d
+#replaceTokens docker.conf | sudo tee /etc/systemd/system/docker.service.d/docker.conf
+
+
+# Setup Docker RemoteAPI
 echo ""
-echo "Creating Docker service configuration file"
-sudo mkdir /etc/systemd/system/docker.service.d
-replaceTokens docker.conf | sudo tee /etc/systemd/system/docker.service.d/docker.conf
+echo "Opening access to port 2375 and docker.sock for Docker RemoteAPI"
+echo "DOCKER_OPTS='-H tcp://0.0.0.0:2375 -H tcp://0.0.0.0:2376 -H unix:///var/run/docker.sock'" | sudo tee -a /etc/default/docker
+
