@@ -26,8 +26,7 @@ xnat_url:       https://bitbucket.org/xnatdev/xnat-web/downloads/xnat-web-1.7.0-
 pipeline_url:   https://bitbucket.org/xnatdev/xnat-pipeline/downloads/xnat-pipeline-1.7.0-SNAPSHOT.zip
 
 # VM config settings
-box:            xnatstack-ubuntu1404-docker-java8
-box_url:        ftp://ftp.nrg.wustl.edu/pub/xnat/boxes/xnatstack-ubuntu1404-docker-java8.box
+box:            nrgxnat/xnatstack-ubuntu1404-docker
 java_path:      /usr/lib/jvm/java-8-openjdk-amd64
 ram:            2048
 cpus:           1

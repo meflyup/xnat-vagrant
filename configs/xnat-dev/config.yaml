@@ -26,8 +26,7 @@ xnat_src:       '' # this value needs to be set in a new 'local.yaml' file in th
 pipeline_src:   ''
 
 # VM config settings
-box:            xnatstack-ubuntu1404-docker-java8
-box_url:        ftp://ftp.nrg.wustl.edu/pub/xnat/boxes/xnatstack-ubuntu1404-docker-java8.box
+box:            nrgxnat/xnatstack-ubuntu1404-docker
 java_path:      /usr/lib/jvm/java-8-openjdk-amd64
 ram:            2048
 cpus:           1
