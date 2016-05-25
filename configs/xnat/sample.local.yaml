@@ -12,8 +12,9 @@ smtp:  mail.server
 # unique IP address for the VM
 vm_ip: 10.1.101.170
 
-xnat_url:     ftp://ftp.nrg.wustl.edu/pub/xnat/xnat-web-1.7.0-SNAPSHOT.war
-pipeline_url: ftp://ftp.nrg.wustl.edu/pub/xnat/xnat-pipeline-1.7.0-SNAPSHOT.zip
+# You can override the URL settings to download from another source, e.g. a build server.
+# xnat_url:     https://jenkins.xnat.org/job/XNAT%20Web/lastSuccessfulBuild/artifact/build/libs/xnat-web-1.7.0-SNAPSHOT.war
+# pipeline_url: https://jenkins.xnat.org/job/XNAT%20Pipeline/lastSuccessfulBuild/artifact/build/libs/xnat-pipeline-1.7.0-SNAPSHOT.zip
 
 # specify additional shares in a 'shares' property
 
