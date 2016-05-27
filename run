@@ -1,0 +1,31 @@
+#!/bin/bash
+
+CONFIG=xnat
+ARG=up
+
+if [[ ! -z $1 ]]; then
+    ARG=$1
+fi
+
+# look for .work/config
+if [[ -f .work/config ]]; then
+
+    CONFIG=$(<.work/config)
+
+    CFGFILE=${PWD}/.work/config
+
+    cd ./configs/${CONFIG}
+
+    # if ARG is 'destroy' delete .work/config
+
+    (vagrant ${ARG}) && [[ ${ARG} == destroy ]] && rm ${CFGFILE}
+
+    exit
+
+fi
+
+# or else, run setup
+echo
+echo Configuration not found. Running setup...
+
+bash ./setup.sh

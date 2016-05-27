@@ -102,11 +102,13 @@ getWar(){
     if [[ -f /vagrant/${URL##*/} && ${URL##*/} == *.war ]]; then
         cp /vagrant/${URL##*/} /var/lib/tomcat7/webapps/ROOT.war
     else
+        cd /vagrant
         echo
         echo "Downloading: ${URL}"
-        curl -s -o /vagrant/${URL##*/} ${URL} \
+        curl -L --retry 5 --retry-delay 5 -s -O ${URL} \
         && cp /vagrant/${URL##*/} /var/lib/tomcat7/webapps/ROOT.war \
         || echo "Error downloading '${URL}'"
+        cd -
     fi
 }
 
@@ -116,7 +118,6 @@ echo Getting XNAT war file...
 getWar ${XNAT_URL}
 
 
-# TODO: pipeline download and processing
 getPipeline() {
 
     URL=$1
@@ -128,10 +129,12 @@ getPipeline() {
 
     # if the file has already been downloaded to the host, use that
     if [[ ! -f /vagrant/${URL##*/} ]]; then
+        cd /vagrant
         echo
         echo "Downloading: ${URL}"
-        curl -s -o /vagrant/${URL##*/} ${URL} \
+        curl -L --retry 5 --retry-delay 5 -s -O ${URL} \
         || echo "Error downloading '${URL}'"
+        cd -
     fi
 
     if [[ -f /vagrant/${URL##*/} ]]; then

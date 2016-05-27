@@ -33,7 +33,11 @@ setupFolders() {
 
 
     # Copy some scripts to the scripts folder
-    sudo cp -fvt /data/scripts /vagrant/.work/vars.sh /vagrant-multi/scripts/rebuild.sh \
+    sudo cp -fvt /data/scripts \
+    /vagrant/.work/vars.sh \
+    /vagrant-multi/scripts/rebuild.sh \
+    /vagrant-multi/scripts/redeploy.sh \
+    /vagrant-multi/scripts/reset-db.sh \
     && sudo chmod +x /data/scripts/*.sh
 
     [[ ! -z ${VM_USER} ]] && { sudo chown -R ${VM_USER}:${VM_USER} /data ${DATA_ROOT}; }
