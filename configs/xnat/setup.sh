@@ -60,7 +60,7 @@ echo
 vagrant up
 
 echo
-echo Reloading VM configuration to configure folder sharing...
+echo Reloading VM to configure folder sharing...
 
 echo
 vagrant reload

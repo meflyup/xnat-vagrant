@@ -3,4 +3,4 @@ cwd     = File.dirname(File.expand_path(__FILE__))
 cfg_dir = File.basename(Dir.getwd)
 
 # then load the 'multi' Vagrantfile
-eval(IO.read('../../Vagrantfile'), binding)
+eval(IO.read('../../scripts/Vagrantfile'), binding)
