@@ -1,9 +1,11 @@
 .idea
 .work
 .vagrant
+*.jar
 *.war
 *.zip
 *.tar.gz
+*.class
 local*
 *--xx*
 *.log
