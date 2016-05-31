@@ -1,5 +1,6 @@
 .idea
 .work
+.tmp
 .vagrant
 *.jar
 *.war
