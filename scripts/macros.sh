@@ -1,7 +1,5 @@
 #!/bin/bash
 
-echo Now running the "macros.sh" provisioning script.
-
 # cache the *original working directory if not already defined
 [[ -z $_OWD ]] && { _OWD=${PWD}; }
 
@@ -19,30 +17,47 @@ setupFolders() {
     VM_USER=$2
 
     sudo mkdir -p \
-        /data \
-        /data/scripts \
         ${DATA_ROOT}/src \
-        ${DATA_ROOT}/modules/pipeline \
-        ${DATA_ROOT}/modules/webapp \
         ${DATA_ROOT}/archive \
         ${DATA_ROOT}/build \
         ${DATA_ROOT}/cache \
         ${DATA_ROOT}/ftp \
-        ${DATA_ROOT}/pipeline \
+        ${DATA_ROOT}/pipeline/modules \
         ${DATA_ROOT}/prearchive
 
 
-    # Copy some scripts to the scripts folder
-    sudo cp -fvt /data/scripts \
+    # Copy some scripts to the local bin folder
+    sudo cp -fvt /usr/local/bin \
     /vagrant/.work/vars.sh \
+    /vagrant-multi/scripts/macros.sh \
     /vagrant-multi/scripts/rebuild.sh \
     /vagrant-multi/scripts/redeploy.sh \
     /vagrant-multi/scripts/reset-db.sh \
-    && sudo chmod +x /data/scripts/*.sh
+    /vagrant-multi/scripts/xnat-capture \
+    /vagrant-multi/scripts/xnat-restore
+    sudo chmod +x /usr/local/bin/*.sh /usr/local/bin/xnat-*
 
     [[ ! -z ${VM_USER} ]] && { sudo chown -R ${VM_USER}:${VM_USER} /data ${DATA_ROOT}; }
 
 }
+
+getProjectDir() {
+    DIRS=($(ls /data))
+    if [[ ((${#DIRS[@]} == 1)) ]]; then
+        PROJECT=`ls -1 /data`
+    else
+        echo "Which project folder do you want to use for capture/restore operations?"
+        echo ""
+        for INDEX in ${!DIRS[@]}; do
+            echo "$((INDEX + 1)) ${DIRS[INDEX]}"
+        done
+        echo ""
+        read -p "Select: " SELECT
+        echo ""
+        CHOICE=$(expr ${SELECT} - 1)
+        PROJECT=${DIRS[$((CHOICE))]}
+    fi
+}    
 
 copyLocalFolder() {
     SRC=$1

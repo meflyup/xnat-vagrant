@@ -1,0 +1,32 @@
+#!/bin/bash
+
+ORIGIN=`dirname $0`
+source ${ORIGIN}/macros.sh
+
+[[ -z "${1}" ]] && { echo You must specify the capture tag to restore; exit 127; } || { CAPTURE_TAG=${1}; }
+
+[[ -d /captures/${CAPTURE_TAG} ]] && { echo The folder for capture tag ${CAPTURE_TAG} does not exist. Exiting.; exit 126; }
+
+USER=`whoami`
+getProjectDir
+
+echo Restoring to capture ${CAPTURE_TAG} to project ${PROJECT}
+
+echo Stopping Tomcat.
+sudo service tomcat7 stop
+sleep 5; # Just because the service command has returned doesn't mean the service stopped right then.
+
+echo Dropping and recreating the database, importing /captures/$CAPTURE_TAG/$PROJECT-$CAPTURE_TAG.sql.
+sudo -u postgres dropdb ${PROJECT}
+sudo -u postgres createdb -O ${VM_USER} ${PROJECT}
+sudo -u ${VM_USER} psql -d ${PROJECT} -f /captures/$CAPTURE_TAG/$PROJECT-$CAPTURE_TAG.sql
+echo Clearing the archive folder and replacing with /captures/$CAPTURE_TAG/archive-$CAPTURE_TAG.zip.
+sudo rm -rf ${DATA_ROOT}/archive/*
+sudo unzip -d ${DATA_ROOT}/archive /captures/$CAPTURE_TAG/archive-$CAPTURE_TAG.zip
+echo Clearing the plugins folder and replacing with /captures/$CAPTURE_TAG/plugins-$CAPTURE_TAG.zip.
+sudo rm -rf ${DATA_ROOT}/home/plugins/*
+sudo unzip -d ${DATA_ROOT}/home/plugins /captures/$CAPTURE_TAG/plugins-$CAPTURE_TAG.zip
+
+echo Restarting Tomcat.
+sudo service tomcat7 start
+

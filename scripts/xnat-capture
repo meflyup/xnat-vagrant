@@ -1,0 +1,35 @@
+#!/bin/bash
+
+ORIGIN=`dirname $0`
+source ${ORIGIN}/macros.sh
+
+[[ -z "${1}" ]] && { CAPTURE_TAG=$(date +%Y%m%d%H%M%S); } || { CAPTURE_TAG=${1}; }
+
+USER=`whoami`
+getProjectDir
+
+echo Capturing from ${PROJECT}
+
+echo Stopping Tomcat.
+sudo service tomcat7 stop
+sleep 5; # Just because the service command has returned doesn't mean the service stopped right then.
+
+pg_dump $PROJECT > $PROJECT-$CAPTURE_TAG.sql
+zip -qdgds 10m $PROJECT-$CAPTURE_TAG.sql.zip $PROJECT-$CAPTURE_TAG.sql
+rm $PROJECT-$CAPTURE_TAG.sql
+
+cd /data/$PROJECT/archive
+zip -rqdgds 10m ~/archive-$CAPTURE_TAG.zip *
+cd /data/$PROJECT/home/plugins
+zip -rqdgds 10m ~/plugins-$CAPTURE_TAG.zip *
+
+sudo mkdir -p /captures/$CAPTURE_TAG
+sudo chown -R $USER.$USER /captures
+mv ~/*$CAPTURE_TAG*.zip /captures/$CAPTURE_TAG
+
+echo Moved all captured data to /captures/$CAPTURE_TAG:
+ls /captures/$CAPTURE_TAG
+
+echo Restarting Tomcat.
+sudo service tomcat7 start
+
