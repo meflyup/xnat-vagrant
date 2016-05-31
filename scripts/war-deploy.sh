@@ -52,9 +52,7 @@ mv /var/lib/tomcat7/conf/context.mod /var/lib/tomcat7/conf/context.xml
 replaceTokens tomcat-users.xml | tee /var/lib/tomcat7/conf/tomcat-users.xml
 
 # Move the default ROOT folder out of the way
-if [ -d /var/lib/tomcat7/webapps/ROOT ]; then
-    mv /var/lib/tomcat7/webapps/ROOT /var/lib/tomcat7/webapps/default
-fi
+[[ -d /var/lib/tomcat7/webapps/ROOT || -f /var/lib/tomcat7/webapps/ROOT.war ]] && { rm -rf /var/lib/tomcat7/webapps/ROOT*; }
 
 
 # POSTGRES STUFF

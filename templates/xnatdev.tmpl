@@ -1,13 +1,9 @@
 server {
-    listen @SERVER@:80;
-
-    server_name @SERVER@;
+    listen 80;
 
     location / {
-        root /var/lib/tomcat7/webapps/@PROJECT@;
-
         proxy_pass                          http://localhost:8080;
-        proxy_redirect                      http://localhost:8080 $scheme://@HOST@;
+        proxy_redirect                      http://localhost:8080 $scheme://localhost;
         proxy_set_header Host               $host;
         proxy_set_header X-Real-IP          $remote_addr;
         proxy_set_header X-Forwarded-Host   $host;
@@ -20,7 +16,4 @@ server {
         client_max_body_size                0;
         client_body_buffer_size             128k;
     }
-
-    access_log /var/log/nginx/@HOST@.access.log;
-    error_log /var/log/nginx/@HOST@.error.log;
 }

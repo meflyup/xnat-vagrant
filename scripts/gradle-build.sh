@@ -51,10 +51,7 @@ mv /var/lib/tomcat7/conf/context.mod /var/lib/tomcat7/conf/context.xml
 replaceTokens tomcat-users.xml | tee /var/lib/tomcat7/conf/tomcat-users.xml
 
 # Move the default ROOT folder out of the way
-if [ -d /var/lib/tomcat7/webapps/ROOT ]; then
-    mv /var/lib/tomcat7/webapps/ROOT /var/lib/tomcat7/webapps/default
-fi
-
+[[ -d /var/lib/tomcat7/webapps/ROOT || -f /var/lib/tomcat7/webapps/ROOT.war ]] && { rm -rf /var/lib/tomcat7/webapps/ROOT*; }
 
 # POSTGRES STUFF
 echo "Setting up postgres"
@@ -132,7 +129,6 @@ getDev() {
 
     # in case the 'dev' source is an archive of the repo
     uncompress ${SRC##*/};
-
 }
 
 # get dev or release files
@@ -181,9 +177,7 @@ echo archiveName=ROOT >> ~/.gradle/gradle.properties
 echo tomcatHome=/var/lib/tomcat7 >> ~/.gradle/gradle.properties
 
 # Move the default ROOT out of the way
-if [ -d /var/lib/tomcat7/webapps/ROOT ]; then
-    mv /var/lib/tomcat7/webapps/ROOT /var/lib/tomcat7/webapps/default
-fi
+[[ -d /var/lib/tomcat7/webapps/ROOT || -f /var/lib/tomcat7/webapps/ROOT.war ]] && { rm -rf /var/lib/tomcat7/webapps/ROOT*; }
 
 # Search for any post-build execution folders and execute the install.sh
 for POST_DIR in /vagrant/post_*; do
