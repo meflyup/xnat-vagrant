@@ -13,7 +13,7 @@ sourceScript() {
 source /vagrant/.work/vars.sh
 
 # look in config's scripts folder first, then try the multi root
-sourceScript macros.sh
+sourceScript macros
 sourceScript defaults.sh
 
 source ~/.bash_profile
@@ -197,9 +197,22 @@ if [[ ! -z ${DEPLOY} && ${DEPLOY} == 'gradle-vm' ]]; then
 fi
 
 echo "Starting Tomcat..."
-sudo service tomcat7 start || die "Tomcat startup failed."
+startTomcat
 
-echo "==========================================================="
-echo "Your VM's IP address is ${VM_IP} and your deployed "
-echo "XNAT server will be available at ${SERVER}."
-echo "==========================================================="
+monitorTomcatStartup
+
+STATUS=$?
+if [[ ${STATUS} == 0 ]]; then
+    echo "==========================================================="
+    echo "Your VM's IP address is ${VM_IP} and your deployed "
+    echo "XNAT server will be available at ${SERVER}."
+    echo "==========================================================="
+    exit 0;
+else
+    echo The application does not appear to have started properly. Status code: ${STATUS}
+    echo The last lines in the log are:; tail -n 40 /var/log/tomcat7/catalina.out;
+fi
+
+exit ${STATUS}
+
+

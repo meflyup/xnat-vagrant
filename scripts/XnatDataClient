@@ -1,0 +1,13 @@
+#!/bin/sh
+# XnatDataClient
+# Copyright (c) 2016 Washington University School of Medicine
+
+LIBDIR=/usr/local/lib
+
+if [ $JAVA_HOME ] ; then
+	JAVA=${JAVA:-${JAVA_HOME}/bin/java}
+else
+	JAVA=${JAVA:-java}
+fi
+
+exec "$JAVA" -jar "$LIBDIR/XnatDataClient-1.7.0-SNAPSHOT-all.jar" "$@"

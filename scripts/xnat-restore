@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ORIGIN=`dirname $0`
-source ${ORIGIN}/macros.sh
+source ${ORIGIN}/macros
 
 [[ -z "${1}" ]] && { echo You must specify the capture tag to restore; exit 127; } || { CAPTURE_TAG=${1}; }
 
@@ -28,5 +28,17 @@ sudo rm -rf ${DATA_ROOT}/home/plugins/*
 sudo unzip -d ${DATA_ROOT}/home/plugins /captures/$CAPTURE_TAG/plugins-$CAPTURE_TAG.zip
 
 echo Restarting Tomcat.
-sudo service tomcat7 start
+startTomcat
+monitorTomcatStartup
+
+STATUS=$?
+if [[ ${STATUS} == 0 ]]; then
+    echo The application was started successfully.
+else
+    echo The application does not appear to have started properly. Status code: ${STATUS}
+    echo The last lines in the log are:; tail -n 40 /var/log/tomcat7/catalina.out;
+fi
+
+exit ${STATUS}
+
 

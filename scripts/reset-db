@@ -10,6 +10,7 @@ die() {
 
 [[ -e vars.sh  ]] || die "vars.sh file is required for redeploy script"
 
+source macros
 source vars.sh
 
 echo
@@ -32,5 +33,20 @@ fi
 
 echo
 echo Restarting Tomcat...
-sudo service tomcat7 start || die "Tomcat startup failed."
-echo
+startTomcat
+
+monitorTomcatStartup
+
+STATUS=$?
+if [[ ${STATUS} == 0 ]]; then
+    echo "==========================================================="
+    echo "Database reset completed successfully."
+    echo "==========================================================="
+    exit 0;
+else
+    echo The application does not appear to have started properly. Status code: ${STATUS}
+    echo The last lines in the log are:; tail -n 40 /var/log/tomcat7/catalina.out;
+fi
+
+exit ${STATUS}
+

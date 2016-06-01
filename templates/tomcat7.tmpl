@@ -19,7 +19,7 @@ JAVA_HOME=@JAVA_PATH@
 # exactly one CPU chip that contains one or two cores, you should also add
 # the "-XX:+CMSIncrementalMode" option.
 JAVA_OPTS="-Djava.awt.headless=true -Xms512m -Xmx1g -XX:+UseConcMarkSweepGC -XX:-OmitStackTraceInFastThrow"
-JAVA_OPTS="${JAVA_OPTS} -XX:MaxPermSize=512m -XX:+CMSIncrementalMode -XX:+CMSClassUnloadingEnabled"
+JAVA_OPTS="${JAVA_OPTS} -XX:+CMSIncrementalMode -XX:+CMSClassUnloadingEnabled"
 JAVA_OPTS="${JAVA_OPTS} -Dxnat.home=@HOME@"
 
 # To enable remote debugging uncomment the following line.

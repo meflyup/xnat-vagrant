@@ -8,10 +8,6 @@
 
 echo Now running the "provision.sh" provisioning script.
 
-# Check if there's a vars.sh specified. If not, then copy the default template in.
-[[ ! -d /vagrant/.work ]] && { mkdir /vagrant/.work; }
-[[ ! -f /vagrant/.work/vars.sh ]] && { cp /vagrant-multi/templates/vars.sh.tmpl /vagrant/.work/vars.sh; }
-
 sourceScript() {
     test -f /vagrant/scripts/$1 && source /vagrant/scripts/$1 || source /vagrant-multi/scripts/$1    
 }
@@ -20,7 +16,7 @@ sourceScript() {
 source /vagrant/.work/vars.sh
 
 # look in config's scripts folder first, then try the multi root
-sourceScript macros.sh
+sourceScript macros
 sourceScript defaults.sh
 
 # Update the VM.
