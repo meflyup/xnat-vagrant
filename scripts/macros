@@ -27,18 +27,17 @@ setupFolders() {
 
 
     # Copy some scripts to the local bin folder
-    sudo cp -fvt /usr/local/bin \
-    /vagrant/.work/vars.sh \
-    /vagrant-multi/scripts/macros.sh \
-    /vagrant-multi/scripts/rebuild.sh \
-    /vagrant-multi/scripts/redeploy.sh \
-    /vagrant-multi/scripts/reset-db.sh \
-    /vagrant-multi/scripts/xnat-capture \
-    /vagrant-multi/scripts/xnat-restore
-    sudo chmod +x /usr/local/bin/*.sh /usr/local/bin/xnat-*
+    sudo cp -fv /vagrant/.work/vars.sh /usr/local/bin
+    sudo find /vagrant-multi/scripts -maxdepth 1 -type f ! -name *.sh -exec cp '{}' /usr/local/bin \;
+    for URL_FILE in /vagrant-multi/scripts/lib/*; do
+        DEST=$(basename ${URL_FILE})
+        URL=$(cat ${URL_FILE})
+        sudo wget -nv ${URL} -O /usr/local/lib/${DEST}
+    done
+    
+    sudo chmod +x /usr/local/bin/*
 
     [[ ! -z ${VM_USER} ]] && { sudo chown -R ${VM_USER}:${VM_USER} /data ${DATA_ROOT}; }
-
 }
 
 getProjectDir() {
@@ -272,6 +271,54 @@ cloneSource() {
 
     fi
 
+}
+
+startTomcat() {
+    [[ $(sudo service tomcat7 status) == *running* ]] \
+        && { echo Tomcat 7 is running, restarting.; sudo service tomcat7 restart || die "Tomcat startup failed."; } \
+        || { echo Tomcat 7 is not running, starting.; sudo service tomcat7 start || die "Tomcat startup failed."; }
+}
+monitorTomcatLog() {
+    INDEX=0
+    until [[ -e /var/log/tomcat7/catalina.out || ${INDEX} > 5 ]]; do
+        ((INDEX += 1))
+        sleep 2
+    done
+    [[ -e /var/log/tomcat7/catalina.out ]] && { return 0; } || { return 127; }
+}
+
+monitorTomcatStatus() {
+    STATUS_MSG="^INFO: Server startup in"
+    QUIET="--quiet"
+    WAIT_FOR=120
+    while [[ $1 ]]; do
+        if [[ $1 =~ ^[0-9]+$ ]]; then
+            WAIT_FOR=$1
+        elif [[ $1 == "verbose" ]]; then
+            QUIET=""
+        else
+            STATUS_MSG=$1
+        fi
+        shift
+    done
+
+    timeout ${WAIT_FOR} sed ${QUIET} "/${STATUS_MSG}/ q" <(timeout $((WAIT_FOR + 5)) tail -n 0 -f /var/log/tomcat7/catalina.out)
+    STATUS=$?
+    if [[ ${STATUS} == 0 ]]; then
+        TOKEN=$(grep "$STATUS_MSG" /var/log/tomcat7/catalina.out)
+        echo Found requested token in Tomcat 7 startup log: "${TOKEN}";
+    else
+        echo Did not find requested token in Tomcat 7 startup log: "${STATUS_MSG}". The last lines in the log are:; tail -n 40 /var/log/tomcat7/catalina.out;
+    fi
+    return ${STATUS}
+}
+
+monitorTomcatStartup() {
+    monitorTomcatLog $@
+    STATUS=$?
+    [[ ${STATUS} == 0 ]] || { echo No start-up log for Tomcat 7 found at /var/log/tomcat7. Status unknown, exiting without monitoring start-up progress.; return ${STATUS}; }
+    monitorTomcatStatus $@
+    return $?
 }
 
 # Exit with error status

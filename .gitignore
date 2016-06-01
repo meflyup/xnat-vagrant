@@ -2,7 +2,6 @@
 .work
 .tmp
 .vagrant
-*.jar
 *.war
 *.zip
 *.tar.gz
