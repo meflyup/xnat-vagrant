@@ -14,9 +14,9 @@ echo Stopping Tomcat.
 sudo service tomcat7 stop
 sleep 5; # Just because the service command has returned doesn't mean the service stopped right then.
 
-pg_dump $PROJECT > $PROJECT-$CAPTURE_TAG.sql
-zip -qdgds 10m $PROJECT-$CAPTURE_TAG.sql.zip $PROJECT-$CAPTURE_TAG.sql
-rm $PROJECT-$CAPTURE_TAG.sql
+pg_dump $PROJECT > database-$CAPTURE_TAG.sql
+zip -qdgds 10m database-$CAPTURE_TAG.sql.zip database-$CAPTURE_TAG.sql
+rm database-$CAPTURE_TAG.sql
 
 cd /data/$PROJECT/archive
 zip -rqdgds 10m ~/archive-$CAPTURE_TAG.zip *
