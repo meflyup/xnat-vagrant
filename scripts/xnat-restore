@@ -21,7 +21,9 @@ echo Dropping and recreating the database, importing /captures/$CAPTURE_TAG/$PRO
 sudo -u postgres dropdb ${PROJECT}
 sudo -u postgres createdb -O ${VM_USER} ${PROJECT}
 
-sudo -u ${VM_USER} psql -d ${PROJECT} -f /captures/$CAPTURE_TAG/$PROJECT-$CAPTURE_TAG.sql
+sudo -u ${VM_USER} unzip /captures/$CAPTURE_TAG/database-$CAPTURE_TAG.sql.zip
+sudo -u ${VM_USER} psql -d ${PROJECT} -f database-$CAPTURE_TAG.sql
+sudo -u ${VM_USER} rm database-$CAPTURE_TAG.sql
 
 # Restore the site URL from the local vars.sh if it differs from the site URL in the restored capture.
 CONFIGURED=$(sudo -u ${VM_USER} psql -t -c "select value from xhbm_preference where name = 'siteUrl'" | sed -e 's/ *$//' | sed 's/^ *//')
