@@ -117,8 +117,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         v.gui    = profile['gui']
     end
 
-    # set the 'xnat-vagrant-multi' folder as a share
-    config.vm.synced_folder "#{multi_root}", '/vagrant-multi'
+        # set the main folder as a share
+    config.vm.synced_folder "#{multi_root}", '/vagrant-root'
 
     # Will only run on initial 'up'
     if profile['provision'] != ''

@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# This script is to be executed from inside the VM to redeploy
-# a previously deployed web app or deploy a newly download war.
+# This script is to be executed from inside the VM to redeploy a
+# previously deployed web app or deploy a newly downloaded war file.
 
-OWD=${PWD}
+OWD=`dirname $0`
 
 # Exit with error status
 die() {
@@ -11,10 +11,10 @@ die() {
     exit -1
 }
 
-[[ -e vars.sh  ]] || die "vars.sh file is required for redeploy script"
+[[ -e ${OWD}/vars.sh  ]] || die "vars.sh file is required for redeploy script"
 
-source macros
-source vars.sh
+source ${OWD}/vars.sh
+source ${OWD}/macros
 
 echo
 echo Stopping Tomcat...
@@ -27,9 +27,9 @@ sudo rm -Rf /var/lib/tomcat7/webapps/ROOT*
 
 echo
 
-if [[ -e /vagrant/${XNAT_SRC##*/} && ${XNAT_SRC##*/} == *.war  ]]; then
+if [[ -e /vagrant-root/local/downloads/${XNAT_SRC##*/} && ${XNAT_SRC##*/} == *.war  ]]; then
     echo Copying war file...
-    cp -fv /vagrant/${XNAT_SRC##*/} /var/lib/tomcat7/webapps/ROOT.war
+    cp -fv /vagrant-root/local/downloads/${XNAT_SRC##*/} /var/lib/tomcat7/webapps/ROOT.war
 elif [[ -e ${DATA_ROOT}/src/${XNAT_DIR}/build/libs/ROOT.war ]]; then
     echo Copying war file...
     cp -fv ${DATA_ROOT}/src/${XNAT_DIR}/build/libs/ROOT.war /var/lib/tomcat7/webapps/ROOT.war
@@ -69,4 +69,3 @@ else
 fi
 
 exit ${STATUS}
-

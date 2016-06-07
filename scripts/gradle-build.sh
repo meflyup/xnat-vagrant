@@ -6,7 +6,7 @@
 echo Now running the "gradle-build.sh" provisioning script.
 
 sourceScript() {
-    test -f /vagrant/scripts/$1 && source /vagrant/scripts/$1 || source /vagrant-multi/scripts/$1
+    test -f /vagrant/scripts/$1 && source /vagrant/scripts/$1 || source /vagrant-root/scripts/$1
 }
 
 # Now initialize the build environment from the config's vars.sh settings.
@@ -69,20 +69,6 @@ sudo service postgresql restart
 
 # XNAT STUFF
 
-# Create project subfolders
-#if [ -d ${DATA_ROOT} ]; then
-#    echo Using existing folder ${DATA_ROOT}, setting ownership to ${VM_USER}
-#    sudo chown ${VM_USER}.${VM_USER} /data
-#    sudo chown ${VM_USER}.${VM_USER} ${DATA_ROOT}
-#    if [ -d ${DATA_ROOT}/src ]; then
-#        sudo chown ${VM_USER}.${VM_USER} ${DATA_ROOT}/src
-#    fi
-#else
-#    echo Creating folder ${DATA_ROOT}
-#    sudo mkdir -p ${DATA_ROOT};
-#    sudo chown -R ${VM_USER}.${VM_USER} /data
-#fi
-
 # setup XNAT data folders
 setupFolders ${DATA_ROOT} ${VM_USER}
 
@@ -94,6 +80,7 @@ downloadSrc() {
     cd ${DATA_ROOT}/src
     echo "Downloading: ${SRC}"
     wget -N -nv ${SRC} || echo "Error downloading '${SRC}'"
+    cd -
 
 }
 
@@ -158,7 +145,7 @@ fi
 
 # Is the variable MODULES defined?
 [[ -v MODULES ]] \
-    && { echo Found MODULES set to ${MODULES}, pulling repositories.; /vagrant-multi/scripts/pull_module_repos.rb ${DATA_ROOT}/modules $MODULES; } \
+    && { echo Found MODULES set to ${MODULES}, pulling repositories.; /vagrant-root/scripts/pull_module_repos.rb ${DATA_ROOT}/modules $MODULES; } \
     || { echo No value set for the MODULES configuration, no custom functionality will be included.; }
 
 mkdir -p ${HOME}/config
@@ -194,6 +181,7 @@ if [[ ! -z ${DEPLOY} && ${DEPLOY} == 'gradle-vm' ]]; then
     echo "Starting Gradle build..."
     cd ${DATA_ROOT}/src/${XNAT}
     ./gradlew war deployToTomcat && echo "Gradle build complete." || die "Gradle build failed."
+    cd -
 fi
 
 echo "Starting Tomcat..."

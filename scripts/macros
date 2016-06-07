@@ -1,13 +1,14 @@
 #!/bin/bash
 
 # cache the *original working directory if not already defined
-[[ -z $_OWD ]] && { _OWD=${PWD}; }
+
+[[ -z $OWD ]] && OWD=`dirname $0`
 
 # replaceTokens function takes the template name from the first argument to the function call and cats that file out.
 # It then replaces all of the tokens with values from vars.sh, then puts the output into the file indicated by the
 # second argument to the function.
 replaceTokens() {
-    cat /vagrant-multi/templates/$1.tmpl | sed -f /vagrant/.work/vars.sed
+    cat /vagrant-root/templates/$1.tmpl | sed -f /vagrant/.work/vars.sed
 }
 
 # create default XNAT data folders
@@ -28,8 +29,8 @@ setupFolders() {
 
     # Copy some scripts to the local bin folder
     sudo cp -fv /vagrant/.work/vars.sh /usr/local/bin
-    sudo find /vagrant-multi/scripts -maxdepth 1 -type f ! -name *.sh -exec cp '{}' /usr/local/bin \;
-    for URL_FILE in /vagrant-multi/scripts/lib/*; do
+    sudo find /vagrant-root/scripts -maxdepth 1 -type f ! -name *.sh -exec cp '{}' /usr/local/bin \;
+    for URL_FILE in /vagrant-root/scripts/lib/*; do
         DEST=$(basename ${URL_FILE})
         URL=$(cat ${URL_FILE})
         sudo wget -nv ${URL} -O /usr/local/lib/${DEST}
@@ -124,7 +125,7 @@ copyLocal() {
     DIRS=$2
 
     # set default folders to look in, if not specified
-    [[ -z $2 ]] && { DIRS="src local /src /vagrant /vagrant/src /vagrant-multi /vagrant-multi/src"; }
+    [[ -z $2 ]] && { DIRS="src local /src /vagrant /vagrant/src /vagrant-root /vagrant-root/local /vagrant-root/src"; }
 
     # look in a few different places
     findFirst $1 ${DIRS}
@@ -169,7 +170,7 @@ uncompress() {
         echo "Extracting gzip archive..."
         tar -zxf ${SRC}
         #rm ${SRC}
-    elif [[ ${SRC} == *.zip ]]; then
+    elif [[ ${SRC} == *.zip && -f ${SRC} ]]; then
         echo "Extracting zip archive..."
         unzip -qo ${SRC}
         #rm ${SRC}
@@ -178,106 +179,12 @@ uncompress() {
 }
 
 
-cloneSource() {
-
-    SRC=$1
-    choice="x"
-
-    cd $_OWD
-
-    [[ -z $SRC ]] && { SRC="https://bitbucket.org/nrg/xnat_builder_1_7dev"; }
-
-    LOCAL_SRC=local/${SRC##*/}
-
-    SRC_PATH=${PWD}/$LOCAL_SRC
-
-    if [[ -d $LOCAL_SRC ]]; then
-        echo
-        echo "The '${SRC##*/}' source repo has already been downloaded."
-        echo
-        echo "Would you like to:"
-        echo "  a - clone a fresh copy, DISCARDING ANY LOCAL CHANGES"
-        echo "  b - update the existing source with the latest changes from the repo"
-        echo "  c - skip and continue"
-        echo
-        read -p "Enter a, b, or c: " choice
-    fi
-
-    [[ $choice == "c" ]] && { return 0; }
-
-    if [[ ! -z $choice && $choice != "c" ]]; then
-
-        if [[ $choice == "a" || $choice == "x" ]]; then
-
-            if [[ -d $LOCAL_SRC ]]; then
-
-                echo
-                echo "Are you sure you'd like to DELETE THE LOCAL SOURCE:"
-                echo "${SRC_PATH}"
-                echo "...and get a fresh copy?"
-                read -p "[y/N] " sure
-                echo
-
-                if [[ $sure != "y" && $sure != "Y" ]]; then
-                    echo "Exiting..."
-                    echo ""
-                    return 0
-                else
-                    echo "Deleting existing source directory:"
-                    echo "${SRC_PATH}"
-                    rm -R $LOCAL_SRC
-                fi
-
-            fi
-
-            mkdir -p $LOCAL_SRC
-
-            echo
-            echo "Cloning source repo ${SRC}"
-            echo "to: ${SRC_PATH}"
-            echo
-
-            hg clone -v $SRC $LOCAL_SRC
-            cloned=$?
-
-            echo
-
-            [[ $cloned == 0 ]] && { echo "Cloning complete."; } || { echo "An error occurred during cloning."; }
-
-        elif [[ $choice == "b" ]]; then
-
-            cd $LOCAL_SRC
-
-            echo
-            echo "Updating local source from ${SRC}"
-            echo
-
-            hg pull -u $SRC
-            pulled=$?
-
-            echo
-
-            [[ $pulled == 0 ]] && { echo "Update complete."; } || { echo "An error occurred during update."; }
-
-        fi
-
-    else
-
-        echo
-        echo "If you'd like to manually clone the source code, create a folder named 'local'"
-        echo "and run 'hg clone ${SRC}' from that directory."
-        echo
-        echo "If you'd like to update an existing repo, run 'hg pull -u' from the source directory."
-
-    fi
-
-}
-
 startTomcat() {
     [[ $(sudo service tomcat7 status) == *running* ]] \
         && { echo Tomcat 7 is running, restarting.; sudo service tomcat7 restart || die "Tomcat startup failed."; } \
         || { echo Tomcat 7 is not running, starting.; sudo service tomcat7 start || die "Tomcat startup failed."; }
 }
+
 monitorTomcatLog() {
     INDEX=0
     until [[ -e /var/log/tomcat7/catalina.out || ${INDEX} > 5 ]]; do

@@ -1,12 +1,18 @@
 #!/bin/bash
 
 ORIGIN=`dirname $0`
-source ${ORIGIN}/macros
+
 source ${ORIGIN}/vars.sh
+source ${ORIGIN}/macros
 
-[[ -z "${1}" ]] && { echo You must specify the capture tag to restore; exit 127; } || { CAPTURE_TAG=${1}; }
+# tag argument takes priority
+[[ ! -z $1 ]] && CAPTURE_TAG=$1 || CAPTURE_TAG=${NAME}  # pulled from vars.sh
 
-[[ -d /captures/${CAPTURE_TAG} ]] && { echo The folder for capture tag ${CAPTURE_TAG} does not exist. Exiting.; exit 126; }
+[[ -z $CAPTURE_TAG ]] && { echo You must specify the capture tag to restore; exit 127; }
+
+[[ ! -d /resources/captures/${CAPTURE_TAG} ]] && { echo "The folder for capture tag ${CAPTURE_TAG} does not exist. Exiting."; exit 126; }
+
+CAPTURE_DIR=/resources/captures/${CAPTURE_TAG}
 
 USER=`whoami`
 getProjectDir
@@ -17,13 +23,12 @@ echo Stopping Tomcat.
 sudo service tomcat7 stop
 sleep 5; # Just because the service command has returned doesn't mean the service stopped right then.
 
-echo Dropping and recreating the database, importing /captures/$CAPTURE_TAG/$PROJECT-$CAPTURE_TAG.sql.
+echo Dropping and recreating the database, importing $CAPTURE_DIR/database-$CAPTURE_TAG.sql.
 sudo -u postgres dropdb ${PROJECT}
 sudo -u postgres createdb -O ${VM_USER} ${PROJECT}
 
-sudo -u ${VM_USER} unzip /captures/$CAPTURE_TAG/database-$CAPTURE_TAG.sql.zip
-sudo -u ${VM_USER} psql -d ${PROJECT} -f database-$CAPTURE_TAG.sql
-sudo -u ${VM_USER} rm database-$CAPTURE_TAG.sql
+sudo [[ -f $CAPTURE_DIR/database-$CAPTURE_TAG.sql.zip ]] && { unzip -d $CAPTURE_DIR $CAPTURE_DIR/database-$CAPTURE_TAG.sql.zip; }
+sudo -u ${VM_USER} [[ -f $CAPTURE_DIR/database-$CAPTURE_TAG.sql ]] && { psql -d ${PROJECT} -f $CAPTURE_DIR/database-$CAPTURE_TAG.sql; rm $CAPTURE_DIR/database-$CAPTURE_TAG.sql; }
 
 # Restore the site URL from the local vars.sh if it differs from the site URL in the restored capture.
 CONFIGURED=$(sudo -u ${VM_USER} psql -t -c "select value from xhbm_preference where name = 'siteUrl'" | sed -e 's/ *$//' | sed 's/^ *//')
@@ -35,12 +40,12 @@ CONTEXT=$(echo ${CONFIGURED} | awk -F/ '{print $4}')
     sudo -u ${VM_USER} psql -t -c "update xhbm_preference set value = '${UPDATED}' where name = 'siteUrl'"; \
 }
 
-echo Clearing the archive folder and replacing with /captures/$CAPTURE_TAG/archive-$CAPTURE_TAG.zip.
+echo Clearing the archive folder and replacing with $CAPTURE_DIR/archive-$CAPTURE_TAG.zip.
 sudo rm -rf ${DATA_ROOT}/archive/*
-sudo unzip -d ${DATA_ROOT}/archive /captures/$CAPTURE_TAG/archive-$CAPTURE_TAG.zip
-echo Clearing the plugins folder and replacing with /captures/$CAPTURE_TAG/plugins-$CAPTURE_TAG.zip.
+sudo [[ -f $CAPTURE_DIR/archive-$CAPTURE_TAG.zip ]] && { unzip -d ${DATA_ROOT}/archive $CAPTURE_DIR/archive-$CAPTURE_TAG.zip; }
+echo Clearing the plugins folder and replacing with $CAPTURE_DIR/plugins-$CAPTURE_TAG.zip.
 sudo rm -rf ${DATA_ROOT}/home/plugins/*
-sudo unzip -d ${DATA_ROOT}/home/plugins /captures/$CAPTURE_TAG/plugins-$CAPTURE_TAG.zip
+sudo [[ -f $CAPTURE_DIR/plugins-$CAPTURE_TAG.zip ]] && { unzip -d ${DATA_ROOT}/home/plugins $CAPTURE_DIR/plugins-$CAPTURE_TAG.zip; }
 
 echo Restarting Tomcat.
 startTomcat
@@ -55,5 +60,3 @@ else
 fi
 
 exit ${STATUS}
-
-
