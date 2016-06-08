@@ -27,8 +27,8 @@ echo Dropping and recreating the database, importing $CAPTURE_DIR/database-$CAPT
 sudo -u postgres dropdb ${PROJECT}
 sudo -u postgres createdb -O ${VM_USER} ${PROJECT}
 
-sudo [[ -f $CAPTURE_DIR/database-$CAPTURE_TAG.sql.zip ]] && { unzip -d $CAPTURE_DIR $CAPTURE_DIR/database-$CAPTURE_TAG.sql.zip; }
-sudo -u ${VM_USER} [[ -f $CAPTURE_DIR/database-$CAPTURE_TAG.sql ]] && { psql -d ${PROJECT} -f $CAPTURE_DIR/database-$CAPTURE_TAG.sql; rm $CAPTURE_DIR/database-$CAPTURE_TAG.sql; }
+[[ -f $CAPTURE_DIR/database-$CAPTURE_TAG.sql.zip ]] && { sudo unzip -d $CAPTURE_DIR $CAPTURE_DIR/database-$CAPTURE_TAG.sql.zip; }
+[[ -f $CAPTURE_DIR/database-$CAPTURE_TAG.sql ]] && { sudo -u ${VM_USER} psql -d ${PROJECT} -f $CAPTURE_DIR/database-$CAPTURE_TAG.sql; sudo rm $CAPTURE_DIR/database-$CAPTURE_TAG.sql; }
 
 # Restore the site URL from the local vars.sh if it differs from the site URL in the restored capture.
 CONFIGURED=$(sudo -u ${VM_USER} psql -t -c "select value from xhbm_preference where name = 'siteUrl'" | sed -e 's/ *$//' | sed 's/^ *//')
@@ -42,10 +42,10 @@ CONTEXT=$(echo ${CONFIGURED} | awk -F/ '{print $4}')
 
 echo Clearing the archive folder and replacing with $CAPTURE_DIR/archive-$CAPTURE_TAG.zip.
 sudo rm -rf ${DATA_ROOT}/archive/*
-sudo [[ -f $CAPTURE_DIR/archive-$CAPTURE_TAG.zip ]] && { unzip -d ${DATA_ROOT}/archive $CAPTURE_DIR/archive-$CAPTURE_TAG.zip; }
+[[ -f $CAPTURE_DIR/archive-$CAPTURE_TAG.zip ]] && { sudo unzip -d ${DATA_ROOT}/archive $CAPTURE_DIR/archive-$CAPTURE_TAG.zip; }
 echo Clearing the plugins folder and replacing with $CAPTURE_DIR/plugins-$CAPTURE_TAG.zip.
 sudo rm -rf ${DATA_ROOT}/home/plugins/*
-sudo [[ -f $CAPTURE_DIR/plugins-$CAPTURE_TAG.zip ]] && { unzip -d ${DATA_ROOT}/home/plugins $CAPTURE_DIR/plugins-$CAPTURE_TAG.zip; }
+[[ -f $CAPTURE_DIR/plugins-$CAPTURE_TAG.zip ]] && { sudo unzip -d ${DATA_ROOT}/home/plugins $CAPTURE_DIR/plugins-$CAPTURE_TAG.zip; }
 
 echo Restarting Tomcat.
 startTomcat
