@@ -3,7 +3,7 @@
 # This script is to be executed from inside the VM to rebuild XNAT.
 # Gradle will be executed and dependencies downloaded in the VM.
 
-OWD=${PWD}
+OWD=`dirname $0`
 
 # Exit with error status
 die() {
@@ -11,10 +11,10 @@ die() {
     exit -1
 }
 
-[[ -e vars.sh  ]] || die "vars.sh file is required for rebuild script"
+[[ -e ${OWD}/vars.sh  ]] || die "vars.sh file is required for redeploy script"
 
-source macros
-source vars.sh
+source ${OWD}/vars.sh
+source ${OWD}/macros
 
 echo
 echo Stopping Tomcat...
@@ -47,7 +47,7 @@ if [[ -d ${DATA_ROOT}/src/${XNAT_DIR}  ]]; then
     echo
     cp -v ${DATA_ROOT}/src/${XNAT_DIR}/build/libs/ROOT.war /var/lib/tomcat7/webapps
 
-    cd $OWD
+    cd -
 
 fi
 
@@ -83,4 +83,3 @@ else
 fi
 
 exit ${STATUS}
-

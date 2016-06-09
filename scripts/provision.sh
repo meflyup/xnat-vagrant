@@ -9,7 +9,7 @@
 echo Now running the "provision.sh" provisioning script.
 
 sourceScript() {
-    test -f /vagrant/scripts/$1 && source /vagrant/scripts/$1 || source /vagrant-multi/scripts/$1    
+    test -f /vagrant/scripts/$1 && source /vagrant/scripts/$1 || source /vagrant-root/scripts/$1
 }
 
 # Now initialize the build environment from the config's vars.sh settings.

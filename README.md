@@ -5,25 +5,24 @@ This is the primary release repository for the [XNAT](http://www.xnat.org) Vagra
 
 ## Note
 
-On Windows, due to the way Git handles line endings (by default) when cloning, you will need to make
-sure to preserve line endings when cloning this repo, otherwise provisioning the VM will fail.
+Windows users will need a Bash terminal program - **Cygwin** or **Git Bash** are recommended. Git Bash is
+installed by default when you run the Git installer and should work for running the scripts in this repo.
 
 ## Quick-Start
 
-Make sure you have Vagrant, Git, and VirtualBox installed on your computer, then run `./setup.sh`
-(or `setup.bat` on Windows) from this folder to build an XNAT virtual machine for testing or development.
-Optionally, you can run the setup script in any preset configuration folder (in subfolders of the 'configs' folder).
+- Make sure you have [Git](https://git-scm.com/downloads), [Vagrant](https://www.vagrantup.com),
+  and [VirtualBox](https://www.virtualbox.org) installed on your host machine.
+- Clone the repo: `git clone https://bitbucket.org/xnatdev/xnat-workshop-vms.git`
+- From inside the `xnat-workshop-vms` folder, run `./run xnat-11 setup` to launch and configure the first VM.
+  Other VM configurations can be set up similarly, substituting the folder name of the config:
+  `./run xnat-12 setup`, etc.
 
-## Info
+### List of commands:
+  - `./run xnat-11 setup` - initial VM setup - *this **must** be performed first to create the VM*
+  - `./run xnat-11 stop` - shuts down the VM
+  - `./run xnat-11 start` - (re)launches a VM that has been set up but is not running
+  - `./run xnat-11 destroy` - deletes the VM and related files
 
-There are multiple configuration options to choose from for setting up your XNAT Vagrant VM.
-These are in the 'configs' folder - please refer to the README files in the respective folders
-for more information regarding each config.
-
-## General Setup
-
-Before you run the setup script, you'll need to have [Vagrant](https://www.vagrantup.com), [Git](https://git-scm.com/downloads),
-and [VirtualBox](https://www.virtualbox.org) installed on your host machine.
-
-
-*(more info to come...)*
+The `run` script is more or less a proxy for the `vagrant` commands, allowing you to work with multiple VMs
+from a single 'root' folder. You can also choose to navigate to each individual config folder and run the
+Vagrant commands directly.

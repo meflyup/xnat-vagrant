@@ -1,31 +1,133 @@
 #!/bin/bash
 
-CONFIG=xnat
-ARG=up
+# ./run config command
+# ./run xnat setup        |  run setup - if already configured, prompt to re-run setup
+# ./run xnat ssh          |  ssh into the 'xnat' VM
+# ./run xnat start        |  launch the 'xnat' config after it has been set up
+# ./run xnat stop         |  stop (halt) the 'xnat' VM
+# ./run xnat destroy      |  delete the VM and associated files
 
-if [[ ! -z $1 ]]; then
-    ARG=$1
+CFG=$1
+#CMD=start
+
+# Exit with error status
+die() {
+    echo >&2 "$@"
+    exit -1
+}
+
+listdirs(){
+    set -- $1*/
+    printf "%s\n" "${@%/}"
+}
+
+# create local folders
+[[ ! -d .work ]] && mkdir -p .work
+[[ ! -d local ]] && \
+mkdir -p \
+local/downloads \
+local/resources/captures \
+local/resources/data \
+local/resources/docker
+
+if [[ -e .work/config ]]; then
+    # use an underscore as the only argument to run the
+    # last config used (stored in the '.work/config' file)
+    [[ $1 == _ ]] && CFG=$(<.work/config)
+    # use a double-underscore to just show the config name and exit
+    [[ $1 == __ ]] && die $(<.work/config)
 fi
 
-# look for .work/config
-if [[ -f .work/config ]]; then
 
-    CONFIG=$(<.work/config)
+#######################
+# RESOLVE THE CONFIG  #
+#######################
 
-    CFGFILE=${PWD}/.work/config
+# if first [config] argument is not passed,
+# list the 'configs' sub-folder names
+[[ -z $CFG ]] && {
+    echo "Configuration not specified. Please choose one of the following:"
+    echo
+    INDEX=1
+    cd ./configs
+    CONFIGS=(`listdirs`)
+    cd ../
+    # look in 'configs' folder
+    for CONFIG in "${CONFIGS[@]}"; do
+        echo ${INDEX} - ${CONFIG%%/}
+        INDEX=$(expr ${INDEX} + 1)
+    done
+    echo
+    read -p "Select: " SELECT
+    echo
+    CHOICE=$(expr ${SELECT} - 1)
+    CFG=${CONFIGS[${CHOICE}]}
+}
 
-    cd ./configs/${CONFIG}
+# make sure the config folder exists
+# you can type the full path or the name of a folder in the 'configs' folder
+[[ ! -d $CFG ]] && { [[ -d configs/$CFG ]] && CFG=configs/$CFG; }
+# check the ./local and ./local/configs folders too
+[[ ! -d $CFG ]] && { [[ -d local/$CFG ]] && CFG=local/$CFG; }
+[[ ! -d $CFG ]] && { [[ -d local/configs/$CFG ]] && CFG=local/configs/$CFG; }
 
-    # if ARG is 'destroy' delete .work/config
+# give up if we haven't found the config folder by now
+[[ ! -d $CFG ]] && die "Configuration not found."
 
-    (vagrant ${ARG}) && [[ ${ARG} == destroy ]] && rm ${CFGFILE}
+# remove trailing slash
+CFG=${CFG%%/}
 
+# save the config we're using as a reference
+printf $CFG > .work/config
+
+# archive it for posterity, or don't
+#timestamp=$(date +%s);
+#dateTime=$(date +%Y%m%d-%H%M%S);
+#configArchiveFile="config-$dateTime.txt"
+#printf $CFG > .work/$configArchiveFile
+
+
+#######################
+# CD TO CONFIG FOLDER #
+#######################
+cd $CFG
+
+# create a .work folder there too
+mkdir -p .work
+
+
+#######################
+# RESOLVE THE COMMAND #
+#######################
+
+# second argument: setup, ssh, start, stop/halt, reload, destroy
+[[ ! -z $2 ]] && CMD=$2
+
+# if no CMD argument is passed, and there's a 'startup' file,
+# use that as CMD (should be 'reload' if setup has completed)
+[[ -z $2 ]] && [[ -f .work/startup ]] && CMD=$(<.work/startup)
+
+# alias 'start' to 'reload', which is how
+# the VM needs to be started after setup
+[[ $CMD == start ]] && CMD=reload
+
+# alias 'stop' to 'halt'
+[[ $CMD == stop ]] && CMD=halt
+
+if [[ $CMD == setup ]]; then
+    echo
+    echo "Starting XNAT build using '${CFG}' config..."
+    bash ./setup.sh && STATUS=$?
     exit
-
+elif [[ ${CMD} =~ (up|ssh|halt|reload|destroy) ]]; then
+    (vagrant ${CMD}) && STATUS=$?
+else
+    die "Command '${CMD}' not found."
 fi
 
-# or else, run setup
-echo
-echo Configuration not found. Running setup...
+# delete files if doing 'destroy'
+[[ $STATUS == 0 && $CMD == destroy ]] && rm -R .work/*
 
-bash ./setup.sh
+## after setup is complete, specify 'reload' as the startup command
+# (this is actually done in the 'war-deploy.sh' script)
+#[[ $STATUS == 0 ]] && printf "reload" > .work/startup

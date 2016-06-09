@@ -1,14 +1,33 @@
 #!/bin/bash
-HOST=xnatdev
-SERVER=10.0.0.165
-XNAT=xnat-1.6.5
-REVISION=1.6.5
-XNAT_REV=1.6.5
-PIPELINE_INST=pipeline-1.6.5
-JAVA_PATH=/usr/lib/jvm/java-7-openjdk-amd64
-VM_USER=xnat
-
-# These variables will default to the same values set here. You can leave them commented out unless you want to change your installation's project or site name.
-# PROJECT=xnat
-# SITE=XNAT
-
+NAME='xnat'
+HOST='xnat'
+SERVER='10.1.1.170'
+PROJECT='xnat'
+SITE='XNAT'
+ADMIN='admin@xnatdev.xnat.org'
+SMTP='devmail.xnat.org'
+VM_USER='xnat'
+VM_IP='10.1.1.170'
+PROVISION='../../scripts/provision.sh'
+BUILD='../../scripts/war-deploy.sh'
+DEPLOY='war'
+REVISION='1.7.0-SNAPSHOT'
+DB_VERSION='9.5'
+XNAT_URL='https://bitbucket.org/xnatdev/xnat-web/downloads/xnat-web-1.7.0-SNAPSHOT.war'
+PIPELINE_URL='https://bitbucket.org/xnatdev/xnat-pipeline/downloads/xnat-pipeline-1.7.0-SNAPSHOT.zip'
+BOX='nrgxnat/xnatstack-ubuntu1404-docker'
+JAVA_PATH='/usr/lib/jvm/java-8-openjdk-amd64'
+RAM='2048'
+CPUS='1'
+GUI='false'
+DATA_ROOT='/data/xnat'
+HOME='/data/xnat/home'
+XNAT_REV='1.7.0-SNAPSHOT'
+PIPELINE_REV='1.7.0-SNAPSHOT'
+XNAT='xnat'
+XNAT_DIR='xnat'
+PIPELINE_INST='pipeline'
+PIPELINE_DIR='pipeline'
+CONFIG='xnat'
+XNAT_SRC='https://bitbucket.org/xnatdev/xnat-web/downloads/xnat-web-1.7.0-SNAPSHOT.war'
+PIPELINE_SRC='https://bitbucket.org/xnatdev/xnat-pipeline/downloads/xnat-pipeline-1.7.0-SNAPSHOT.zip'

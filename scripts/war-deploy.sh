@@ -7,7 +7,7 @@
 echo Now running the "war-deploy.sh" provisioning script.
 
 sourceScript() {
-    test -f /vagrant/scripts/$1 && source /vagrant/scripts/$1 || source /vagrant-multi/scripts/$1
+    test -f /vagrant/scripts/$1 && source /vagrant/scripts/$1 || source /vagrant-root/scripts/$1
 }
 
 # Now initialize the build environment from the config's vars.sh settings.
@@ -76,18 +76,9 @@ sudo service postgresql restart
 # setup XNAT data folders
 setupFolders ${DATA_ROOT} ${VM_USER}
 
-#if [ -d ${DATA_ROOT} ]; then
-#    echo Using existing folder ${DATA_ROOT}, setting ownership to ${VM_USER}
-#    sudo chown ${VM_USER}.${VM_USER} /data
-#    sudo chown ${VM_USER}.${VM_USER} ${DATA_ROOT}
-#    if [ -d ${DATA_ROOT}/src ]; then
-#        sudo chown ${VM_USER}.${VM_USER} ${DATA_ROOT}/src
-#    fi
-#else
-#    echo Creating folder ${DATA_ROOT}
-#    sudo mkdir -p ${DATA_ROOT};
-#    sudo chown -R ${VM_USER}.${VM_USER} /data
-#fi
+# make sure there's a 'universal' local/downloads folder
+mkdir -p /vagrant-root/local/downloads
+DL_DIR=/vagrant-root/local/downloads
 
 # Download pre-built .war file and copy to tomcat webapps folder
 getWar(){
@@ -97,14 +88,14 @@ getWar(){
     cd ${DATA_ROOT}/src
 
     # if the file has already been downloaded to the host, use that
-    if [[ -f /vagrant/${URL##*/} && ${URL##*/} == *.war ]]; then
-        cp /vagrant/${URL##*/} /var/lib/tomcat7/webapps/ROOT.war
+    if [[ -f ${DL_DIR}/${URL##*/} && ${URL##*/} == *.war ]]; then
+        cp ${DL_DIR}/${URL##*/} /var/lib/tomcat7/webapps/ROOT.war
     else
-        cd /vagrant
+        cd ${DL_DIR}
         echo
         echo "Downloading: ${URL}"
         curl -L --retry 5 --retry-delay 5 -s -O ${URL} \
-        && cp /vagrant/${URL##*/} /var/lib/tomcat7/webapps/ROOT.war \
+        && cp ${DL_DIR}/${URL##*/} /var/lib/tomcat7/webapps/ROOT.war \
         || echo "Error downloading '${URL}'"
         cd -
     fi
@@ -126,8 +117,8 @@ getPipeline() {
     cd pipeline
 
     # if the file has already been downloaded to the host, use that
-    if [[ ! -f /vagrant/${URL##*/} ]]; then
-        cd /vagrant
+    if [[ ! -f ${DL_DIR}/${URL##*/} ]]; then
+        cd ${DL_DIR}
         echo
         echo "Downloading: ${URL}"
         curl -L --retry 5 --retry-delay 5 -s -O ${URL} \
@@ -135,9 +126,9 @@ getPipeline() {
         cd -
     fi
 
-    if [[ -f /vagrant/${URL##*/} ]]; then
+    if [[ -f ${DL_DIR}/${URL##*/} ]]; then
         echo Extracting ${URL##*/}...
-        unzip -qo /vagrant/${URL##*/}
+        unzip -qo ${DL_DIR}/${URL##*/}
         replaceTokens pipeline.gradle.properties | tee gradle.properties
         ./gradlew -q
     fi
@@ -148,7 +139,7 @@ getPipeline ${PIPELINE_URL}
 
 # Is the variable MODULES defined?
 [[ -v MODULES ]] \
-    && { echo Found MODULES set to ${MODULES}, pulling repositories.; /vagrant-multi/scripts/pull_module_repos.rb ${DATA_ROOT}/modules $MODULES; } \
+    && { echo Found MODULES set to ${MODULES}, pulling repositories.; /vagrant-root/scripts/pull_module_repos.rb ${DATA_ROOT}/modules $MODULES; } \
     || { echo No value set for the MODULES configuration, no custom functionality will be included.; }
 
 mkdir -p ${HOME}/config
@@ -175,6 +166,8 @@ monitorTomcatStartup
 
 STATUS=$?
 if [[ ${STATUS} == 0 ]]; then
+    # after setup is successful, specify 'reload' as the startup command
+    printf "reload" > /vagrant/.work/startup
     echo "==========================================================="
     echo "Your VM's IP address is ${VM_IP} and your deployed "
     echo "XNAT server will be available at ${SERVER}."
