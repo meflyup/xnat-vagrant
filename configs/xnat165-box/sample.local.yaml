@@ -1,0 +1,14 @@
+# xnat165-box/local.yaml
+
+# unique name for the VM
+name: xnat165-test
+
+# unique IP address for the VM
+vm_ip: 10.1.101.165
+
+# specify additional shares in a 'shares' property
+
+# shares:
+#   './shared':                      # path to local folder on host
+#     - '/shared'                    # path to folder in VM
+#     - ['fmode=777','dmode=777']    # (optional) 'mount_options' array

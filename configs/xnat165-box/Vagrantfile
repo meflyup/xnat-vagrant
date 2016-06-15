@@ -1,0 +1,123 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+#
+# XNAT Vagrant project
+# http://www.xnat.org
+# Copyright (c) 2015-2016, Washington University School of Medicine, all rights reserved.
+# Released under the Simplified BSD license.
+#
+
+require 'yaml'
+
+# save the root 'multi' dir
+multi_root = '../..'
+
+cwd     = File.dirname(File.expand_path(__FILE__))
+cfg_dir = File.basename(Dir.getwd)
+
+Dir.mkdir("#{cwd}/.work") unless File.exists?("#{cwd}/.work")
+
+# load config settings
+puts "Loading #{cwd}/config.yaml for Vagrant configuration..."
+profile    = YAML.load_file("#{cwd}/config.yaml")
+
+# load local customizations
+# (We really want to read these last, but we need to read the config file from here.)
+local_path = "#{cwd}/local.yaml"
+local      = {}
+if File.exists? (local_path)
+    puts "Loading local overrides from #{local_path}..."
+    local = YAML.load_file(local_path)
+    local.each { |k, v|
+        profile[k] = v
+    }
+end
+
+profile['host'] ||= ''
+if profile['host'] == ''
+    profile['host'] = profile['name']
+end
+
+profile['provision'] ||= ''
+
+File.open("#{cwd}/.work/vars.sh", 'wb') { |vars|
+    vars.truncate(0)
+    vars.puts("#!/bin/bash\n")
+    profile.each { |k, v|
+        vars.puts "#{k.upcase}='#{v}'"
+    }
+}
+
+File.open("#{cwd}/.work/vars.sed", 'wb') { |vars|
+    vars.truncate(0)
+    profile.each { |k, v|
+        # Only put v in the sed file if it's a string. No subs for hashes.
+        if v.is_a?(String)
+            vars.puts "s/@#{k.upcase}@/#{v.gsub('/', "\\/")}/g"
+        end
+    }
+}
+
+shares     = profile['shares'] ||= profile['shared'] ||= profile['share']
+has_shares = shares && shares != 'false'
+
+API_VERSION = '2'
+
+Vagrant.configure(API_VERSION) do |config|
+
+    config.vm.define "#{profile['name']}"
+
+    config.vm.box     = profile['box']
+    config.vm.box_url = profile['box_url']
+
+    config.vm.network 'private_network', ip: profile['vm_ip']
+    config.vm.hostname = profile['host']
+
+    config.vm.provider 'virtualbox' do |v|
+        v.name   = profile['name']
+        v.memory = profile['ram']
+        v.cpus   = profile['cpus']
+        v.gui    = profile['gui']
+    end
+
+    # set the main folder as a share
+    config.vm.synced_folder "#{multi_root}", '/vagrant-root'
+
+    # # Will only run on initial 'up'
+    # if profile['provision'] != ''
+    #     # since this Vagrantfile is eval'd in the config's Vagrantfile,
+    #     # this path is actually in the config's folder
+    #     provision_script = "#{profile['provision']}"
+    #     # look for provision script in config folder first
+    #     unless File.exists? (provision_script)
+    #         provision_script = "#{multi_root}/#{profile['provision']}"
+    #     end
+    #     config.vm.provision :shell, binary: true, path: provision_script
+    # end
+
+    #config.ssh.username = profile['vm_user']
+
+    if has_shares
+        shares.each { |share, share_to|
+            puts "Setting up share from #{share} to #{share_to[0]}"
+            config.vm.synced_folder share, share_to[0], mount_options: share_to[1]
+        }
+    end
+
+    # # Will only run on initial 'up'
+    # if profile['build'] != ''
+    #     # since this Vagrantfile is eval'd in the config's own Vagrantfile,
+    #     # this path is actually in the config's folder
+    #     build_script = "#{profile['build']}"
+    #     # look for provision script in config folder first
+    #     unless File.exists? (build_script)
+    #         build_script = "#{multi_root}/#{profile['build']}"
+    #     end
+    #
+    #     # Additional provisioners, called explicitly by "--provision-with foo"
+    #     config.vm.provision 'build', type: :shell, binary: true, path: build_script, privileged: false
+    #
+    # end
+
+end

@@ -129,7 +129,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         unless File.exists? (provision_script)
             provision_script = "#{multi_root}/#{profile['provision']}"
         end
-        config.vm.provision :shell, path: provision_script
+        config.vm.provision :shell, binary: true, path: provision_script
     end
 
     if ARGV[0] != 'up' && ARGV[0] != 'destroy'
