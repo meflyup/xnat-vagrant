@@ -9,7 +9,7 @@ XNAT Vagrant
 
 ### Notes
 
-- This VM is intended development and trial purposes, and is not designed for
+- This VM is intended for development and trial purposes, and is not designed for
   use in a production environment.
 - The default site will be at `http://10.1.1.170`.
 - The default login is username: `admin`, password: `admin`
