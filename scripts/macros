@@ -181,8 +181,8 @@ uncompress() {
 
 startTomcat() {
     [[ $(sudo service tomcat7 status) == *running* ]] \
-        && { echo Tomcat 7 is running, restarting.; sudo service tomcat7 restart || die "Tomcat startup failed."; } \
-        || { echo Tomcat 7 is not running, starting.; sudo service tomcat7 start || die "Tomcat startup failed."; }
+        && { echo Tomcat 7 is running, restarting.; sudo service tomcat7 stop; sudo rm -rf /var/log/tomcat7/*; sudo service tomcat7 start || die "Tomcat startup failed."; } \
+        || { echo Tomcat 7 is not running, starting.; sudo rm -rf /var/log/tomcat7/*; sudo service tomcat7 start || die "Tomcat startup failed."; }
 }
 
 monitorTomcatLog() {
@@ -209,15 +209,20 @@ monitorTomcatStatus() {
         shift
     done
 
-    timeout ${WAIT_FOR} sed ${QUIET} "/${STATUS_MSG}/ q" <(timeout $((WAIT_FOR + 5)) tail -n 0 -f /var/log/tomcat7/catalina.out)
-    STATUS=$?
-    if [[ ${STATUS} == 0 ]]; then
-        TOKEN=$(grep "$STATUS_MSG" /var/log/tomcat7/catalina.out)
-        echo Found requested token in Tomcat 7 startup log: "${TOKEN}";
+    # First check if it's already completed start-up. This happens when the web app isn't loaded on VM creation, e.g. xnat-dev.
+    if [[ (($(STATUS_MSG="^INFO: Server startup in"; grep "${STATUS_MSG}" /var/log/tomcat7/catalina.out | wc -l) == 0)) ]]; then
+        timeout ${WAIT_FOR} sed ${QUIET} "/${STATUS_MSG}/ q" <(timeout $((WAIT_FOR + 5)) tail -n 0 -f /var/log/tomcat7/catalina.out)
+        STATUS=$?
+        if [[ ${STATUS} == 0 ]]; then
+            TOKEN=$(grep "$STATUS_MSG" /var/log/tomcat7/catalina.out)
+            echo Found requested token in Tomcat 7 startup log: "${TOKEN}";
+        else
+            echo Did not find requested token in Tomcat 7 startup log: "${STATUS_MSG}". The last lines in the log are:; tail -n 40 /var/log/tomcat7/catalina.out;
+        fi
+        return ${STATUS}
     else
-        echo Did not find requested token in Tomcat 7 startup log: "${STATUS_MSG}". The last lines in the log are:; tail -n 40 /var/log/tomcat7/catalina.out;
+        echo It looks like Tomcat started before I started monitoring. Maybe XNAT\'s not installed yet? Status message was: $(grep "${STATUS_MSG}" /var/log/tomcat7/catalina.out).
     fi
-    return ${STATUS}
 }
 
 monitorTomcatStartup() {
