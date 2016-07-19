@@ -44,7 +44,33 @@ pipeline_src: '/local/path/to/xnat-pipeline'
 
 > You **MUST** specify the `xnat_src` (and optionally `pipeline_src`) parameters before continuing or setup will fail.
 
-Launch the `setup.sh` script (or `setup.bat` on Windows):
+Optionally, you can mount folders from the **xnat** user's home folder, which is in **/data/xnat/home**. The standard
+folders here are:
+
+- **config** contains the XNAT configuration file(s)
+- **logs** contains the XNAT application logs
+- **plugins** contains any installed XNAT plugin libraries
+- **work** contains temporary files for managing downloads, server work, etc.
+
+The **xnat-vagrant** **.gitignore** file contains entries for these folders at the root level of the project, meaning
+you can create and mount these folders without them showing up as changes to the source-controlled project. To mount
+these folders on your VM, you need to configure them in a **shares** section in your **local.yaml** file. The code
+below demonstrates how to configure the **logs** and **plugins** folders.
+
+```bash
+shares:
+    '../../plugins':
+        - '/data/xnat/plugins'
+        - ['fmode=777','dmode=777']
+    '../../logs':
+        - '/data/xnat/home/logs'
+        - ['fmode=777','dmode=777']
+```
+
+> **Note:** Do *not* try to share the **/data/xnat/home** folder itself! There are system files stored there that
+will not work properly with a shared folder.
+
+Once you have your local configuration set up, launch the `setup.sh` script (or `setup.bat` on Windows):
 
 ```bash
 ./setup.sh

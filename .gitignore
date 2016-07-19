@@ -9,5 +9,7 @@
 local*
 *--xx*
 *.log
-/plugins
+/config
 /logs
+/plugins
+/work
