@@ -21,10 +21,10 @@ installed by default when you run the Git installer and should work for running 
   Other VM configurations can be set up similarly, substituting the folder name of the config:
   `./run xnat-latest setup`, etc. You can see the available configurations by listing the contents of the 
   **configs** folder. The currently available configurations are:
-    * [xnat](configs/xnat/README.md) downloads the latest XNAT release bundle and installs it in the VM.
-    * [xnat-dev](configs/xnat-dev/README.md) mounts XNAT source and pipeline folders into the VM to facilitate deploying XNAT development.
-    * [xnat-latest](configs/xnat-latest/README.md) clones the XNAT web source folder to allow you to build the latest XNAT code inside the VM.
-    * [xnat165-box](configs/xnat165-box/README.md) builds a VM using the XNAT 1.6.5 box image, which provides the XNAT 1.6.5 release server.
+    * [xnat](configs/xnat) downloads the latest XNAT release bundle and installs it in the VM.
+    * [xnat-dev](configs/xnat-dev) mounts XNAT source and pipeline folders into the VM to facilitate deploying XNAT development.
+    * [xnat-latest](configs/xnat-latest) clones the XNAT web source folder to allow you to build the latest XNAT code inside the VM.
+    * [xnat165-box](configs/xnat165-box) builds a VM using the XNAT 1.6.5 box image, which provides the XNAT 1.6.5 release server.
 
 ### List of commands:
   - `./run xnat setup`   - initial VM setup - *this **must** be performed first to create the VM
