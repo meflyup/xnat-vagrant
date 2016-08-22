@@ -182,6 +182,12 @@ if [[ ! -z ${DEPLOY} && ${DEPLOY} == 'gradle-vm' ]]; then
     cd ${DATA_ROOT}/src/${XNAT}
     ./gradlew war deployToTomcat && echo "Gradle build complete." || die "Gradle build failed."
     cd -
+elif [[ ! -z ${CONFIG} && ${CONFIG} == 'xnat-dev' ]]; then
+    # Or deploy the war file if it's available.
+    for FILE in ${DATA_ROOT}/src/${XNAT}/build/libs/xnat-web-*.war; do
+        [[ -e "${FILE}" ]] && { cp "${FILE}" /var/lib/tomcat7/webapps/ROOT.war; } 
+        break
+    done
 fi
 
 echo "Starting Tomcat..."
@@ -202,5 +208,4 @@ else
 fi
 
 exit ${STATUS}
-
 
