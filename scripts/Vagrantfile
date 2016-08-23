@@ -110,6 +110,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     config.vm.network 'private_network', ip: profile['vm_ip']
     config.vm.hostname = profile['host']
 
+    config.vbguest.auto_update = false
+
     config.vm.provider 'virtualbox' do |v|
         v.name   = profile['name']
         v.memory = profile['ram']
