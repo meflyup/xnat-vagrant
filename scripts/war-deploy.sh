@@ -77,8 +77,9 @@ sudo service postgresql restart
 setupFolders ${DATA_ROOT} ${VM_USER}
 
 # make sure there's a 'universal' local/downloads folder
-mkdir -p /vagrant-root/local/downloads
-DL_DIR=/vagrant-root/local/downloads
+#mkdir -p /vagrant-root/local/downloads
+#DL_DIR=/vagrant-root/local/downloads
+DL_DIR=/vagrant
 
 # Download pre-built .war file and copy to tomcat webapps folder
 getWar(){
@@ -135,6 +136,8 @@ getPipeline() {
 }
 
 # Get the pipeline zip file, extract it, and run the installer.
+echo
+echo Getting Pipeline zip file...
 getPipeline ${PIPELINE_URL}
 
 # Is the variable MODULES defined?
