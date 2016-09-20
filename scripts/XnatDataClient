@@ -10,4 +10,4 @@ else
 	JAVA=${JAVA:-java}
 fi
 
-exec "$JAVA" -jar "$LIBDIR/XnatDataClient-1.7.0-SNAPSHOT-all.jar" "$@"
+exec "$JAVA" -jar "$LIBDIR/XnatDataClient-1.7.0-all.jar" "$@"

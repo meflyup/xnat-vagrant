@@ -19,7 +19,7 @@ provision:      ../../scripts/provision.sh
 build:          ../../scripts/gradle-build.sh
 deploy:         gradle-vm
 
-revision:       1.7.0-SNAPSHOT
+revision:       1.7.0
 db_version:     9.5
 
 xnat_repo:      https://bitbucket.org/xnatdev/xnat-web.git
