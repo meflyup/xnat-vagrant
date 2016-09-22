@@ -17,7 +17,7 @@ installed by default when you run the Git installer and should work for running 
   and [VirtualBox](https://www.virtualbox.org) installed on your host machine.
 - Clone the repo: `git clone https://bitbucket.org/xnatdev/xnat-vagrant.git`
 - From inside the `xnat-vagrant` folder, run `./run xnat setup` to launch and configure a Vagrant VM using the
-  [latest pre-built XNAT war file](https://bitbucket.org/xnatdev/xnat-web/downloads/xnat-web-1.7.0.war).
+  [latest pre-built XNAT war file](https://bintray.com/nrgxnat/applications/download_file?file_path=xnat-web-1.7.0.war).
   Other VM configurations can be set up similarly, substituting the folder name of the config:
   `./run xnat-latest setup`, etc. You can see the available configurations by listing the contents of the 
   **configs** folder. The currently available configurations are:

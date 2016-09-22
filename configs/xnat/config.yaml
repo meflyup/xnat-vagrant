@@ -22,8 +22,8 @@ deploy:         war
 revision:       1.7.0
 db_version:     9.5
 
-xnat_url:       https://bitbucket.org/xnatdev/xnat-web/downloads/xnat-web-1.7.0.war
-pipeline_url:   https://bitbucket.org/xnatdev/xnat-pipeline/downloads/xnat-pipeline-1.7.0.zip
+xnat_url:       https://bintray.com/nrgxnat/applications/download_file?file_path=xnat-web-1.7.0.war
+pipeline_url:   https://bintray.com/nrgxnat/applications/download_file?file_path=xnat-pipeline-1.7.0.zip
 
 # VM config settings
 box:            nrgxnat/xnatstack-ubuntu1404-docker
